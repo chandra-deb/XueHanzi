@@ -8,12 +8,64 @@
 </head>
 
 <body>
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/wchars">CanWrite</a>
+        <a href="/kchars">KnownChars</a>
+    </div>
 
+    <!--  {% for character in characterList %}
     <ul>
         {% for character in characterList %}
         <li>{{character.character}}</li>
         <li>{{character.hsk_serial}}</li>
         {% endfor %}
+    </ul>
+    {% endfor %} -->
+
+    <script>
+        function updateCharacterStatus(val) {
+            var canWriteCheckbox = document.getElementById('canWriteCheckbox');
+            var knownCheckbox = document.getElementById('knownCheckbox');
+
+            var canWriteCharacter = canWriteCheckbox.checked;
+            var knownCharacter = knownCheckbox.checked;
+
+            console.log(val)
+            if (canWriteCharacter) {
+                console.log(canWriteCharacter);
+                fetch('http://127.0.0.1:5000/wchars/2', { method: "GET" });
+            }
+
+
+        }
+    </script>
+
+    {% for character in characterList %}
+    <ul>
+        <li>{{character.character}}</li>
+        <li>{{character.hsk_serial}}</li>
+        <li>
+            Can Write:
+            <input type="checkbox" id="canWriteCheckbox" onclick=updateCharacterStatus(character.id) {% if
+                character.can_write %} checked {% endif %} />
+        </li>
+        <li>
+            Known:
+            <input type="checkbox" id="knownCheckbox" onclick="updateCharacterStatus()" {% if character.known_character
+                %} checked {% endif %}>
+        </li>
+    </ul>
+    {% endfor %}
+
+    <div class="pagination">
+        {% if characterList.has_prev %}
+        <a href="{{ url_for('home', page=characterList.prev_num) }}">Previous</a>
+        {% endif %}
+        {% if characterList.has_next %}
+        <a href="{{ url_for('home', page=characterList.next_num) }}">Next</a>
+        {% endif %}
+    </div>
 
 
 </body>

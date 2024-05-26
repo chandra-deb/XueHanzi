@@ -4,6 +4,7 @@ import hsk1, hsk2, hsk3, hsk4, hsk5, hsk6
 
 
 from flask_sqlalchemy import SQLAlchemy
+from flask import request
 
 app = Flask(__name__)
 
@@ -119,11 +120,51 @@ with app.app_context():
 
 
 
+
+
 @app.route('/')
 def home():
-    characters = db.session.query(Character).all()
-    return render_template('index.html', title='Home' , characterList=characters)
+    page_number = 1
+    page = request.args.get('page', page_number, type=int)
+    per_page = 30
+    characters = db.session.query(Character).paginate(page=page, per_page=per_page)
+    return render_template('index.html', title='Home', characterList=characters.items, next_page_number = page_number +1, prev_page_number = page_number -1)
 
+@app.route('/wchars')
+def writablechars():
+    characters = db.session.query(Character).filter_by(can_write=True).all()
+    return render_template('wchars.html',
+                        title='Writable Characters' , 
+                        characterList=characters)
+#generate a route for modifying can_write attribute
+@app.route('/wchars/<int:char_id>')
+def update_writable(char_id):
+    character = db.session.query(Character).get(char_id)
+    character.can_write = not character.can_write
+    db.session.commit()
+
+    characters = db.session.query(Character).filter_by(can_write=True).all()
+    return render_template('wchars.html',
+                        title='Writable Characters' , 
+                        characterList=characters)
+
+@app.route('/kchars')
+def knownchars():
+    characters = db.session.query(Character).filter_by(is_known=True).all()
+    return render_template('kchars.html',
+                        title='Known Characters' , 
+                        characterList=characters)
+
+@app.route('/kchars/<int:char_id>')
+def update_known(char_id):
+    character = db.session.query(Character).get(char_id)
+    character.is_known = not character.is_known
+    db.session.commit()
+
+    characters = db.session.query(Character).filter_by(is_known=True).all()
+    return render_template('kchars.html',
+                        title='Known Characters' , 
+                        characterList=characters)
 
 
 if __name__ == '__main__':

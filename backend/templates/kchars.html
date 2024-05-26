@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+
+<body>
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/wchars">CanWrite</a>
+    </div>
+    <div class="container"></div>
+    <h1>{{title}}</h1>
+    <ul>
+        {% for character in characterList %}
+        <li>
+            <div class="character-card">
+                <div class="character">{{character.character}}</div>
+                <div class="details">
+                    <div class="hsk-level">HSK Level: {{character.hsk_level}}</div>
+                    <div class="pinyin">Pinyin: {{character.pinyin}}</div>
+                    <div class="meaning">Meaning: {{character.meaning}}</div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    </div>
+
+
+    <!-- <ul>
+        {% for character in characterList %}
+        <li>{{character.character}}</li>
+        <li>{{character.hsk_level}}</li>
+        {% endfor %} -->
+</body>
+
+</html>
