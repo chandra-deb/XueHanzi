@@ -164,16 +164,7 @@ def knownchars():
                         title='Known Characters' , 
                         characterList=characters)
 
-@app.route('/kchars/<int:char_id>')
-def update_known(char_id):
-    character = db.session.query(Character).get(char_id)
-    character.is_known = not character.is_known
-    db.session.commit()
 
-    characters = db.session.query(Character).filter_by(is_known=True).all()
-    return render_template('kchars.html',
-                        title='Known Characters' , 
-                        characterList=characters)
 
 
 if __name__ == '__main__':
