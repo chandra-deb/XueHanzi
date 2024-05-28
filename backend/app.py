@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from unidecode import unidecode
 from flask import request
+import hsk1, hsk2, hsk3, hsk4, hsk5, hsk6
 
 app = Flask(__name__)
 
@@ -16,7 +17,8 @@ class Character(db.Model):
     hsk_serial = db.Column(db.Integer)
     hsk_level = db.Column(db.Integer)
     character = db.Column(db.String(8))
-    pinyin = db.Column(db.String(18))
+    pinyin = db.Column(db.String(50))
+    no_tone_pinyin = db.Column(db.String(50))
     meaning = db.Column(db.String(200))
     can_write = db.Column(db.Boolean, default=False)
     is_known = db.Column(db.Boolean, default=False)
@@ -28,6 +30,7 @@ class Character(db.Model):
         self.character = character
         self.meaning = meaning
         self.pinyin = pinyin
+        self.no_tone_pinyin = unidecode(pinyin)
         self.tags = tags
     
 
@@ -48,8 +51,41 @@ class SubTag(db.Model):
     def __init__(self, name, tag):
         self.name = name
         self.tag = tag
+def initialize_database():
+    count = 0
+    with app.app_context():
+        db.create_all()
+        count += 1 
+        for level in range(1, 7):
+            if level == 1:
+                words = hsk1.words
+            elif level == 2:
+                words = hsk2.words
+            elif level == 3:
+                words = hsk3.words
+            elif level == 4:
+                word = hsk4.words
+            elif level == 5:
+                words = hsk5.words
+            elif level == 6:
+                words = hsk6.words
 
+            for char in words:
+                translations = ''
+                for translation in char['translations']:
+                    translations += translation + ', '
+                character = Character(
+                        hsk_serial=char["id"],
+                        character=char['hanzi'],
+                        pinyin=char['pinyin'],
+                        meaning=translations,
+                        tags='',
+                        hsk_level=level)
+                db.session.add(character)
 
+        print(count)
+
+        db.session.commit() 
 
 @app.route('/')
 def home():
@@ -109,7 +145,8 @@ def search():
 
 
 
+
 if __name__ == '__main__':
-    
+    # initialize_database()
     app.run(debug=True)
 
