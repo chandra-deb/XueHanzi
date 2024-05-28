@@ -57,10 +57,115 @@
             margin-bottom: 10px;
             color: #fff;
         }
+
+        /* For header */
+        .header {
+            background: #3b5998;
+            height: 60px;
+            width: 100%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .header .logo h1 {
+            margin: 0;
+            flex: 1 0 100%;
+            text-align: center;
+        }
+
+        .header nav {
+            flex: 1 0 100%;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .header nav a:last-child {
+            margin-right: 0;
+        }
+
+        .header form {
+            display: flex;
+            align-items: center;
+            flex: 1 0 100%;
+        }
+
+        .header input[type="text"] {
+            margin-right: 10px;
+            flex: 1 0 auto;
+        }
+
+        .header input[type="submit"] {
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .header input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        @media (min-width: 600px) {
+            .header {
+                flex-wrap: nowrap;
+            }
+
+            .header .logo h1 {
+                flex: 0 0 auto;
+                text-align: left;
+            }
+
+            .header nav {
+                flex: 0 0 auto;
+                text-align: right;
+            }
+
+            .header form {
+                flex: 0 0 auto;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="header">
+        <div class="logo">
+            <h1>My Website</h1>
+        </div>
+        <form action="/search" method="post">
+            <input type="text" name="query" placeholder="Search">
+            <input type="submit" value="Search">
+        </form>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/wchars">CanWrite</a>
+            <a href="/kchars">KnownChars</a>
+        </nav>
+    </div>
+    <!-- header>
+    <div class="links">
+        <a href="/">Home</a>
+        <a href="/wchars">CanWrite</a>
+        <a href="/kchars">KnownChars</a>
+        <form action="/search" method="post">
+            <input type="text" name="query" placeholder="Search">
+            <input type="submit" value="Search">
+        </form>
+    </div -->
+    </header>
     {%if char_results%}
     <h2>Characters Matches</h2>
     {% for character in char_results %}
@@ -75,6 +180,7 @@
     {%endif%}
 
     {%if pinyin_results%}
+    <hr>
     <h2>Pinyins Matches</h2>
     {% for character in pinyin_results %}
 
