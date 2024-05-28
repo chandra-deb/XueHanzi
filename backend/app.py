@@ -134,7 +134,7 @@ def search():
     query = request.form.get('query')
     char_results = [char for char in Character.query.filter(Character.character.like(f'%{query}%')).all()]
     print(char_results)
-    pinyin_results =   [char for char in Character.query.filter(Character.pinyin.like(f'%{query}%')).all()]
+    pinyin_results =   [char for char in Character.query.filter(Character.no_tone_pinyin.like(f'%{query}%')).all()]
     if(pinyin_results == None):
         pinyin_results = []
     meaning_results = [char for char in Character.query.filter(Character.meaning.like(f'%{query}%')).all()]
