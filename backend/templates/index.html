@@ -12,8 +12,12 @@
         <a href="/">Home</a>
         <a href="/wchars">CanWrite</a>
         <a href="/kchars">KnownChars</a>
+        <form action="/search" method="post">
+            <input type="text" name="query" placeholder="Search">
+            <input type="submit" value="Search">
+        </form>
     </div>
-    s
+
 
     <div class="pagination">
         {% if characterList.has_prev %}

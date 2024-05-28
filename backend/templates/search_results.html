@@ -8,10 +8,21 @@
 </head>
 
 <body>
-    {% for character in results %}
-    <p>{{ character.meaning }}</p>
+    {%if char_results%}
+    <h2>Characters</h2>
+    {% for character in char_results %}
+    <p>{{ character.character }}</p>
     <hr size="20">
     {% endfor %}
+    {%endif%}
+    <hr>
+    {%if pinyin_results%}
+    <h2>Pinyins</h2>
+    {% for pinyin in pinyin_results %}
+    <p>{{ pinyin.pinyin }}</p>
+    <hr size="20">
+    {% endfor %}
+    {%endif%}
 </body>
 
 </html>

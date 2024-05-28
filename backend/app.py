@@ -1,9 +1,6 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-import hsk1, hsk2, hsk3, hsk4, hsk5, hsk6
-
-
-from flask_sqlalchemy import SQLAlchemy
+from unidecode import unidecode
 from flask import request
 
 app = Flask(__name__)
@@ -52,74 +49,6 @@ class SubTag(db.Model):
         self.name = name
         self.tag = tag
 
-# Create a new Tag
-# tag = Tag(name='Tag Name')
-# db.session.add(tag)
-# db.session.commit()
-
-# # Create a new SubTag associated with a Tag
-# tag = Tag.query.filter_by(name='Tag Name').first()
-# subtag = SubTag(name='SubTag Name', tag=tag)
-# db.session.add(subtag)
-# db.session.commit()
-
-
-
-""" characterList = [{"character": "你", "pinyin": "nǐ", "meaning": "you"}, 
-                 {"character": "好", "pinyin": "hǎo", "meaning": "good"},
-                 {"character": "吗", "pinyin": "ma", "meaning": "question particle"},
-                 {"character": "我", "pinyin": "wǒ", "meaning": "I"},
-                 {"character": "很", "pinyin": "hěn", "meaning": "very"},
-                 {"character": "也", "pinyin": "yě", "meaning": "also"},
-                 {"character": "是", "pinyin": "shì", "meaning": "to be"},
-                 {"character": "谢谢", "pinyin": "xièxiè", "meaning": "thank you"},
-                 {"character": "不客气", "pinyin": "bú kèqì", "meaning": "you're welcome"},
-                 {"character": "再见", "pinyin": "zàijiàn", "meaning": "goodbye"},
-                 {"character": "对不起", "pinyin": "duìbuqǐ", "meaning": "I'm sorry"},
-                 {"character": "没关系", "pinyin": "méi guānxi", "meaning": "it's okay"},
-                 {"character": "请问", "pinyin": "qǐngwèn", "meaning": "excuse me"},
-                 {"character": "请坐", "pinyin": "qǐng zuò", "meaning": "please sit"},
-                 {"character": "请喝茶", "pinyin": "qǐng hē chá", "meaning": "please drink tea"},
-                 {"character": "请问你叫什么名字", "pinyin": "qǐngwèn nǐ jiào shénme míngzì", "meaning": "what is your name"},
-                 {"character": "我叫", "pinyin": "wǒ jiào", "meaning": "my name is"},
-                 {"character": "你叫什么名字", "pinyin": "nǐ jiào shénme míngzì", "meaning": "what is your name"},
-                 {"character": "你贵姓", "pinyin": "nǐ guìxìng", "meaning": "what is your surname"},]
- """
-with app.app_context():
-    db.create_all()
-    
-    for level in range(1, 7):
-        if level == 1:
-            words = hsk1.words
-        elif level == 2:
-            words = hsk2.words
-        elif level == 3:
-            words = hsk3.words
-        elif level == 4:
-            word = hsk4.words
-        elif level == 5:
-            words = hsk5.words
-        elif level == 6:
-            words = hsk6.words
-
-        for char in words:
-            translations = ''
-            for translation in char['translations']:
-                translations += translation + ', '
-            character = Character(
-                hsk_serial=char["id"],
-                character=char['hanzi'],
-                pinyin=char['pinyin'],
-                meaning=translations,
-                tags='',
-                hsk_level=level)
-            db.session.add(character)
-
-
-    db.session.commit() 
-
-
-
 
 
 @app.route('/')
@@ -163,6 +92,19 @@ def knownchars():
     return render_template('kchars.html',
                         title='Known Characters' , 
                         characterList=characters)
+
+@app.route('/search', methods=['POST'])
+def search():
+    query = request.form.get('query')
+    char_results = [char for char in Character.query.filter(Character.character.like(f'%{query}%')).all()]
+    print(char_results)
+    pinyin_results =   [char for char in Character.query.filter(Character.pinyin.like(f'%{query}%')).all()]
+    if(pinyin_results == None):
+        pinyin_results = []
+    meaning_results = [char for char in Character.query.filter(Character.meaning.like(f'%{query}%')).all()]
+    if(meaning_results == None):
+        meaning_results = []
+    return render_template('search_results.html', char_results=char_results, pinyin_results=pinyin_results, meaning_results=meaning_results) 
 
 
 
