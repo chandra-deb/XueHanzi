@@ -13,14 +13,15 @@
         }
 
         form {
-            max-width: 300px;
+            max-width: 500px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 40px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
         }
+
 
         ul {
             list-style: none;
@@ -28,9 +29,11 @@
         }
 
         li {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             color: #fff;
         }
+
+
 
         li:last-child {
             text-align: center;
@@ -66,8 +69,6 @@
             <input type="submit" value="Search">
         </form>
     </div>
-
-
     <div class="pagination">
         {% if characterList.has_prev %}
         <a href="{{ url_for('home', page=characterList.prev_num) }}">Previous</a>
@@ -89,7 +90,6 @@
             </li>
             <li>
                 Known:
-
                 <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
                     checked {% endif %}>
             </li>
