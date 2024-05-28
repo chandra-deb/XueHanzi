@@ -13,50 +13,7 @@
         <a href="/wchars">CanWrite</a>
         <a href="/kchars">KnownChars</a>
     </div>
-
-    <!--  {% for character in characterList %}
-    <ul>
-        {% for character in characterList %}
-        <li>{{character.character}}</li>
-        <li>{{character.hsk_serial}}</li>
-        {% endfor %}
-    </ul>
-    {% endfor %} -->
-
-    <script>
-        function updateCharacterStatus(val) {
-            var canWriteCheckbox = document.getElementById('canWriteCheckbox');
-            var knownCheckbox = document.getElementById('knownCheckbox');
-
-            var canWriteCharacter = canWriteCheckbox.checked;
-            var knownCharacter = knownCheckbox.checked;
-
-            console.log(val)
-            if (canWriteCharacter) {
-                console.log(canWriteCharacter);
-                fetch('http://127.0.0.1:5000/wchars/2', { method: "GET" });
-            }
-
-
-        }
-    </script>
-
-    {% for character in characterList %}
-    <ul>
-        <li>{{character.character}}</li>
-        <li>{{character.hsk_serial}}</li>
-        <li>
-            Can Write:
-            <input type="checkbox" id="canWriteCheckbox" onclick=updateCharacterStatus(character.id) {% if
-                character.can_write %} checked {% endif %} />
-        </li>
-        <li>
-            Known:
-            <input type="checkbox" id="knownCheckbox" onclick="updateCharacterStatus()" {% if character.known_character
-                %} checked {% endif %}>
-        </li>
-    </ul>
-    {% endfor %}
+    s
 
     <div class="pagination">
         {% if characterList.has_prev %}
@@ -67,7 +24,26 @@
         {% endif %}
     </div>
 
+    {% for character in characterList %}
+    <form action="/update_data/{{character.id}}" method="post">
+        <ul>
+            <li>{{character.character}}</li>
+            <li>{{character.hsk_serial}}</li>
+            <li>
+                Can Write:
+                <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if
+                    character.can_write %}checked{% endif %} />
+            </li>
+            <li>
+                Known:
 
+                <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
+                    checked {% endif %}>
+            </li>
+            <li><input type="submit" value="Submit"></li>
+        </ul>
+    </form>
+    {% endfor %}
 </body>
 
 </html>

@@ -136,17 +136,26 @@ def writablechars():
     return render_template('wchars.html',
                         title='Writable Characters' , 
                         characterList=characters)
-#generate a route for modifying can_write attribute
-@app.route('/wchars/<int:char_id>')
-def update_writable(char_id):
-    character = db.session.query(Character).get(char_id)
-    character.can_write = not character.can_write
-    db.session.commit()
 
-    characters = db.session.query(Character).filter_by(can_write=True).all()
-    return render_template('wchars.html',
-                        title='Writable Characters' , 
+#generate a route for modifying can_write attribute
+@app.route('/update_data/<int:char_id>', methods=['POST'])
+def update_data(char_id):
+    can_write = 'canwrite' in request.form
+    known = 'known' in request.form
+    print(f"can write {request.form}")
+    character = db.session.query(Character).get(char_id)
+    character.can_write = can_write
+    print(f"is known  {character.is_known}")
+    character.is_known = known
+    print(f"is known  {character.is_known}")
+    db.session.commit()
+    print(can_write,known)
+
+    characters = db.session.query(Character).limit(30)
+    return render_template('index.html',
+                        title='Home Page', 
                         characterList=characters)
+    
 
 @app.route('/kchars')
 def knownchars():
