@@ -129,12 +129,16 @@ def writablechars():
     characters = db.session.query(Character).filter_by(can_write=True).all()
     return render_template('wchars.html',
                         title='Writable Characters' , 
-                        characterList=characters)
+                        characterList=characters, charsLength = len(characters))
+
+@app.route('/kpractice')
+def kpractice():
+   writable_characters = db.session.query(Character).filter_by(can_write=True).all()
+   character = random.choice(writable_characters) 
+   return render_template('known_practice.html', character = character)
 
 @app.route('/wpractice')
-def practice():
-
-
+def wpractice():
     writable_characters = db.session.query(Character).filter_by(can_write=True).all()
     character = random.choice(writable_characters)
 
@@ -232,7 +236,7 @@ def knownchars():
     characters = db.session.query(Character).filter_by(is_known=True).all()
     return render_template('kchars.html',
                         title='Known Characters' , 
-                        characterList=characters)
+                        characterList=characters, charsLength=len(characters))
 
 @app.route('/search', methods=['POST'])
 def search():

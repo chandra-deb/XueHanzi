@@ -146,8 +146,9 @@
             <h1>XueHanzi</h1>
         </div>
         <form action="/search" method="post">
-            <input type="text" name="query" placeholder="Search">
+            <input style="size: 30px;" type="text" name="query" placeholder="Search">
             <input type="submit" value="Search">
+
         </form>
         <nav>
             <a href="/">Home</a>
@@ -155,17 +156,9 @@
             <a href="/kchars">KnownChars</a>
         </nav>
     </div>
-    <!-- header>
-    <div class="links">
-        <a href="/">Home</a>
-        <a href="/wchars">CanWrite</a>
-        <a href="/kchars">KnownChars</a>
-        <form action="/search" method="post">
-            <input type="text" name="query" placeholder="Search">
-            <input type="submit" value="Search">
-        </form>
-    </div -->
-    </header>
+
+
+    <hr size="40px" style="border: none;">
     {%if char_results%}
     <h2>Characters Matches</h2>
     {% for character in char_results %}
@@ -189,6 +182,21 @@
         <div class="pinyin">{{character.pinyin}}</div>
         <div class="meaning">{{character.meaning}}</div>
         <div class="hsk-level">HSK Level: {{character.hsk_level}}</div>
+        <form action="/update_data/{{character.id}}" method="post">
+            <ul>
+                <li>
+                    Can Write:
+                    <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if
+                        character.can_write %}checked{% endif %} />
+                </li>
+                <li>
+                    Known:
+                    <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known
+                        %} checked {% endif %}>
+                </li>
+                <li><input type="submit" value="Submit"></li>
+            </ul>
+        </form>
     </div>
     {% endfor %}
     <hr size="20">
