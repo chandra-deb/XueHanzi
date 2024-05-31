@@ -1,8 +1,11 @@
-from flask import Flask, render_template
+from bs4 import BeautifulSoup
+from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from unidecode import unidecode
 from flask import request
 import hsk1, hsk2, hsk3, hsk4, hsk5, hsk6
+import random
+import requests
 
 app = Flask(__name__)
 
@@ -93,7 +96,11 @@ def home():
     page = request.args.get('page', page_number, type=int)
     per_page = 30
     characters = db.session.query(Character).paginate(page=page, per_page=per_page)
+    for chara in characters.items:
+        print("Character: ", chara.tags)
+        print("Tags: ", chara.tags)
     return render_template('index.html', title='Home', characterList=characters.items, next_page_number = page_number +1, prev_page_number = page_number -1)
+
 
 @app.route('/wchars')
 def writablechars():
@@ -101,6 +108,82 @@ def writablechars():
     return render_template('wchars.html',
                         title='Writable Characters' , 
                         characterList=characters)
+
+@app.route('/wpractice')
+def practice():
+
+
+    writable_characters = db.session.query(Character).filter_by(can_write=True).all()
+    character = random.choice(writable_characters)
+
+    urls = []
+    characters =[]
+
+    for single in character.character:
+        if(single not in characters):
+            characters.append(single)
+
+            url = f"https://www.strokeorder.com/chinese/{single}"
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+
+            # for how to write
+            div = soup.find_all('div', class_='stroke-article-content')
+            div_sheet = div[1]
+            div_char = div[0]
+            if div_char is not None:
+                img = div_char.find('img')
+                if img is not None:
+                    urls.append(f"https://www.strokeorder.com{img['src']}")
+            # for character sheet
+            if div_sheet is not None:
+                img = div_sheet.find('img')
+                if img is not None:
+                    urls.append(f"https://www.strokeorder.com{img['src']}")
+    return render_template('writing_practice.html',
+                        title='Practice' , 
+                        img_urls=urls, character=character)
+
+
+
+
+@app.route('/character/<character>')
+def get_character_image(character):
+
+    url = f"https://www.strokeorder.com/chinese/{character}"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # for character sheet
+    div = soup.find('div', class_='stroke-article-content')
+    if div is not None:
+        img = div.find('img')
+        if img is not None:
+            print(img['src'])
+
+    
+    # How to write character
+
+    div = soup.find('div', class_='stroke-article-content')
+    if div is not None:
+        img = div.find('img')
+        if img is not None:
+            return jsonify({'image_src': f"https://www.strokeorder.com{img['src']}"})
+
+    return jsonify({'error': 'Image not found'}), 404
+
+
+
+
+# @app.route('how_to_write:<string:character>')
+# def how_to_write(character):
+
+    '''<div class="stroke-article-content">
+<img src="/assets/bishun/stroke/20320.png" alt="你 Stroke Order Diagrams" title="你 Stroke Order Diagrams">
+</div>'''
+    # return render_template('how_to_write.html', character=character)
+
 
 #generate a route for modifying can_write attribute
 @app.route('/update_data/<int:char_id>', methods=['POST'])
