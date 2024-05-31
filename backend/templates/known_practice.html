@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPractice</title>
+    <style>
+        body {
+            background: #34495e;
+            color: #ece6e6;
+        }
+
+        .hidden {
+            visibility: hidden;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+            max-width: 600px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            background-color: rgba(8, 8, 8, 0.151);
+
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .card-header h1 {
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .card-header button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #008CBA;
+            color: white;
+            cursor: pointer;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!--  -->
+    <div class="card">
+        <div class="card-header">
+            <h1 style="font-size: 3em;">{{character.character}}</h1>
+            <button id="show">Show</button>
+        </div>
+        <div class="card-body">
+            <!-- <div class="hanzi hidden">{{character.character}}</div> -->
+            <div style="font-size: 1.4em;" class="pinyin hidden">Pinyin: {{character.pinyin}}</div>
+            <div style="font-size: 1.4em;" class="meaning hidden">Meaning: {{character.meaning}}</div>
+            <div style="font-size: 1.4em;" class="hsk-level hidden">HSK Level: {{character.hsk_level}}</div>
+        </div>
+    </div>
+    <script>
+        const showButton = document.getElementById('show');
+        // const hanzi = document.querySelector('.hanzi');
+        const pinyin = document.querySelector('.pinyin');
+        const meaning = document.querySelector('.meaning');
+        const hskLevel = document.querySelector('.hsk-level');
+
+        showButton.addEventListener('click', () => {
+            pinyin.classList.toggle('hidden');
+            meaning.classList.toggle('hidden');
+            hskLevel.classList.toggle('hidden');
+        });
+
+        function reloadPage() {
+            location.reload();
+        }
+    </script>
+
+    <center><button style="background-color: #34495e;color: #cde1e9; font-size: 40px;"
+            onclick="reloadPage()">Next</button></center>
+    <hr size="30" style="border: none;">
+</body>
+
+</html>
