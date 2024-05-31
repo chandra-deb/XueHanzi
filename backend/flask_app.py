@@ -137,6 +137,7 @@ def kpractice():
    character = random.choice(writable_characters) 
    return render_template('known_practice.html', character = character)
 
+
 @app.route('/wpractice')
 def wpractice():
     writable_characters = db.session.query(Character).filter_by(can_write=True).all()
@@ -149,27 +150,62 @@ def wpractice():
         if(single not in characters):
             characters.append(single)
 
-            url = f"https://www.strokeorder.com/chinese/{single}"
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
+            # url = f"https://www.strokeorder.com/chinese/{single}"
+            # response = requests.get(url)
+            # soup = BeautifulSoup(response.text, 'html.parser')
 
 
             # for how to write
-            div = soup.find_all('div', class_='stroke-article-content')
-            div_sheet = div[1]
-            div_char = div[0]
-            if div_char is not None:
-                img = div_char.find('img')
-                if img is not None:
-                    urls.append(f"https://www.strokeorder.com{img['src']}")
+            # div = soup.find_all('div', class_='stroke-article-content')
+            # div_sheet = div[1]
+            # div_char = div[0]
+            # if div_char is not None:
+            #     img = div_char.find('img')
+            #     if img is not None:
+            urls.append("/strokeorderDownloads/hsk{}/{}.png".format(character.hsk_level,single))
             # for character sheet
-            if div_sheet is not None:
-                img = div_sheet.find('img')
-                if img is not None:
-                    urls.append(f"https://www.strokeorder.com{img['src']}")
+            # if div_sheet is not None:
+            #     img = div_sheet.find('img')
+            #     if img is not None:
+            urls.append("/strokeorderDownloads/hsk{}/sheets/{}-sheet.png".format(character.hsk_level,single))
     return render_template('writing_practice.html',
                         title='Practice' , 
                         img_urls=urls, character=character)
+
+
+# @app.route('/wpractice')
+# def wpractice():
+#     writable_characters = db.session.query(Character).filter_by(can_write=True).all()
+#     character = random.choice(writable_characters)
+
+#     urls = []
+#     characters =[]
+
+#     for single in character.character:
+#         if(single not in characters):
+#             characters.append(single)
+
+#             url = f"https://www.strokeorder.com/chinese/{single}"
+#             response = requests.get(url)
+#             soup = BeautifulSoup(response.text, 'html.parser')
+
+
+#             # for how to write
+#             div = soup.find_all('div', class_='stroke-article-content')
+#             div_sheet = div[1]
+#             div_char = div[0]
+#             if div_char is not None:
+#                 img = div_char.find('img')
+#                 if img is not None:
+#                     urls.append(f"https://www.strokeorder.com{img['src']}")
+#             # for character sheet
+#             if div_sheet is not None:
+#                 img = div_sheet.find('img')
+#                 if img is not None:
+#                     urls.append(f"https://www.strokeorder.com{img['src']}")
+#     return render_template('writing_practice.html',
+#                         title='Practice' , 
+#                         img_urls=urls, character=character)
 
 
 
