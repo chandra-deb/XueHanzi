@@ -1,5 +1,5 @@
-from app import Character, db
-from app import app
+from backend.flask_app import Character, db
+from backend.flask_app import app
 import hsk1, hsk2, hsk3, hsk4, hsk5, hsk6
 
 

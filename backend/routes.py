@@ -1,5 +1,5 @@
 from flask import render_template
-from app import app, db, Character
+from backend.flask_app import app, db, Character
 
 
 @app.route('/')

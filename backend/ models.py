@@ -1,1 +1,1 @@
-from app import db
+from backend.flask_app import db
