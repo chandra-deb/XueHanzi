@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, jsonify
+from flask import Flask, redirect, render_template, jsonify, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from unidecode import unidecode
 from flask import request
@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///characters.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'your_secret_key_here'
 
 db = SQLAlchemy(app=app)
 
@@ -89,6 +90,27 @@ def initialize_database():
         print(count)
 
         db.session.commit() 
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+            
+            
+    if username == 'admin' and password == 'learningisearning1':
+        session['username'] = username  # Add the user to the session
+        return redirect(url_for('home'))
+    else:
+        return render_template('login_page.html')
+
+from flask import request, redirect, url_for
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login'] 
+    if 'username' not in session and request.endpoint not in allowed_routes:
+        return redirect(url_for('login'))  
 
 @app.route('/')
 def home():
