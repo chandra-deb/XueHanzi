@@ -276,7 +276,7 @@ def knownchars():
 
 @app.route('/search', methods=['POST'])
 def search():
-    query = request.form.get('query')
+    query = request.form.get('query').strip()
     char_results = [char for char in Character.query.filter(Character.character.like(f'%{query}%')).all()]
     print(char_results)
     pinyin_results =   [char for char in Character.query.filter(Character.no_tone_pinyin.like(f'%{query}%')).all()]
@@ -293,5 +293,5 @@ def search():
 
 if __name__ == '__main__':
     # initialize_database()
-    app.run(debug=False)
+    app.run(debug=True)
 
