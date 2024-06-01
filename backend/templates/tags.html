@@ -164,8 +164,45 @@
         }
 
         .tp {
-            /* make this class tag disapear */
-            display: block;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: #3b5998;
+            padding: 20px;
+            display: none;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tp form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tp form div {
+            margin-right: 10px;
+        }
+
+        .tp form input[type="submit"] {
+            background: #007bff;
+            padding: 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .tp form input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        #practiceDiv {
+            display: none;
         }
     </style>
 </head>
@@ -189,18 +226,49 @@
 
         </nav>
     </div>
-    <hr size="30px" style="border: none;">
+    <hr size="50px" style="border: none;">
+    <div>
+        <center>
+            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleDiv()">Show Practice
+                Form</button>
+        </center>
+    </div>
+    <hr style="border: none;">
+    <script>
+        function setFormAction(form, action) {
+            form.action = action;
+        }
+        function toggleDiv() {
+            var div = document.getElementById('practiceDiv');
+            if (div.style.display !== "block") {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
 
-    <div class="tp">
-        <form method="GET" action="/wpractice" style="display: flex; flex-wrap: wrap;">
+    </script>
+    <div class="tp" id="practiceDiv">
+        <form method="GET" id="practiceForm" style="display: flex; flex-wrap: wrap;">
             {% for tag in tags %}
             <div style="margin-right: 10px;">
-                <input type="checkbox" name="tags" value="{{ tag.id }}">
+                <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}">
                 <label for="{{ tag.id }}">{{ tag.name }}</label>
             </div>
             {% endfor %}
-            <input type="submit" value="Start Practice">
+            <div style="margin-top: 20px;">
+                <center>
+                    <span>Start</span>
+                    <input style="background: #007bff;padding: 10px;" type="submit" value="Writing"
+                        onclick="setFormAction(document.getElementById('practiceForm'), '/wpractice')">
+                    <span>OR</span>
+                    <input style="background: #007bff;padding: 10px;" type="submit" value="Recall"
+                        onclick="setFormAction(document.getElementById('practiceForm'), '/kpractice')">
+                    <span>Practice of this tags </span>
+                </center>
+            </div>
         </form>
+
     </div>
 
     {% for tag in tags %}
