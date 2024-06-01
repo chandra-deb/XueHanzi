@@ -204,6 +204,45 @@
         #practiceDiv {
             display: none;
         }
+
+        .tags {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: #3b5998;
+            padding: 20px;
+            display: none;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tags form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tags form div {
+            margin-bottom: 10px;
+        }
+
+        .tags form input[type="submit"] {
+            background: #007bff;
+            padding: 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .tags form input[type="submit"]:hover {
+            background: #0056b3;
+        }
     </style>
 </head>
 
@@ -229,12 +268,21 @@
     <hr size="50px" style="border: none;">
     <div>
         <center>
-            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleDiv()">Show Practice
-                Form</button>
+            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleDiv()">Practice</button>
+            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleTagsDiv()">Modify
+                Tags</button>
         </center>
     </div>
     <hr style="border: none;">
     <script>
+        function toggleTagsDiv() {
+            var div = document.querySelector('.tags');
+            if (div.style.display != "block") {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
         function setFormAction(form, action) {
             form.action = action;
         }
@@ -249,6 +297,8 @@
 
     </script>
     <div class="tp" id="practiceDiv">
+        <button onclick="toggleDiv()" style="position: absolute; top: 10px; right: 10px;">Close</button>
+
         <form method="GET" id="practiceForm" style="display: flex; flex-wrap: wrap;">
             {% for tag in tags %}
             <div style="margin-right: 10px;">
@@ -300,6 +350,9 @@
 
 
         <div class="tags">
+            <button type="button" onclick="toggleTagsDiv()"
+                style="position: absolute; top: 10px; right: 10px;">Close</button>
+
 
             <center>
 
