@@ -126,7 +126,8 @@
             onclick="reloadPage()">Next</button></center>
     <hr size="30" style="border: none;">
     {% for url in img_urls %}
-    <img class="img-hidden" src="{{url}}" alt="" srcset="" style="max-width: 100%; display: none; height: auto;">
+    <img class="img-hidden" src="/static/{{url}}" alt="" srcset=""
+        style="max-width: 100%; display: none; height: auto;">
     {% endfor %}
 
 </body>
