@@ -51,6 +51,18 @@ class Character(db.Model):
         self.no_tone_pinyin = unidecode(pinyin)
         self.tags = [Tag(name=tag_name) for tag_name in tags]
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "hsk_serial": self.hsk_serial,
+            "hsk_level": self.hsk_level,
+            "character": self.character,
+            "pinyin": self.pinyin,
+            "meaning": self.meaning,
+            "can_write": self.can_write,
+            "is_known": self.is_known,
+        }
+
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -419,14 +431,11 @@ def get_character_image(character):
 def update_data(char_id):
     can_write = "canwrite" in request.form
     known = "known" in request.form
-    print(f"can write {request.form}")
     character = db.session.query(Character).get(char_id)
+
     character.can_write = can_write
-    print(f"is known  {character.is_known}")
     character.is_known = known
-    print(f"is known  {character.is_known}")
     db.session.commit()
-    print(can_write, known)
 
     return redirect(request.referrer)
 
@@ -444,28 +453,42 @@ def knownchars():
     )
 
 
-@app.route("/search", methods=["POST"])
+@app.route("/search", methods=["GET", "POST"])
 def search():
-    query = request.form.get("query").strip()
+
+    if request.method == "POST":
+        query = request.form.get("query").strip()
+        session["query"] = query  # Store the query in the session
+    query = session.get("query", "")
+
     char_results = [
-        char
-        for char in Character.query.filter(Character.character.like(f"%{query}%")).all()
+        char.to_dict()
+        for char in Character.query.filter(
+            Character.character.like(f"%{query}%")
+        ).limit(10)
     ]
-    print(char_results)
+
+    if char_results == None:
+        char_results = []
+
     pinyin_results = [
-        char
+        char.to_dict()
         for char in Character.query.filter(
             Character.no_tone_pinyin.like(f"%{query}%")
-        ).all()
+        ).limit(10)
     ]
     if pinyin_results == None:
         pinyin_results = []
+
     meaning_results = [
-        char
-        for char in Character.query.filter(Character.meaning.like(f"%{query}%")).all()
+        char.to_dict()
+        for char in Character.query.filter(Character.meaning.like(f"%{query}%")).limit(
+            10
+        )
     ]
     if meaning_results == None:
         meaning_results = []
+
     return render_template(
         "search_results.html",
         char_results=char_results,
