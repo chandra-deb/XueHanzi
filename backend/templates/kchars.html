@@ -138,8 +138,21 @@
             <a href="/">Home</a>
             <a href="/wchars">CanWrite</a>
             <a href="/kchars">KnownChars</a>
+            <a href="/tags">Tags</a>
         </nav>
     </div>
+
+    <div class="tags">
+        <h2>Tags</h2>
+        <form action="" method="post">
+            {% for tag in tags %}
+            <li><input type="checkbox" name="tag" value="{{ tag.id }}"> {{ tag.name }}</li>
+            {% endfor %}
+        </form>
+        </form>
+    </div>
+
+
 
 
     <hr size="40px" style="border: none;">
@@ -157,6 +170,12 @@
         <div class="pinyin">{{character.pinyin}}</div>
         <div class="meaning">{{character.meaning}}</div>
         <div class="hsk-level">HSK Level: {{character.hsk_level}}</div>
+        {% for tag in character.tags %}
+        <h1>{{ tag.name }}</h1>
+        {% endfor %}
+        <div class="edit-tags">
+            <a href="/charTags/{{character.id}}">Edit Tags</a>
+        </div>
     </div>
     {% endfor %}
 

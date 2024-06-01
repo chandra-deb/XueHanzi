@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+
+
+
+<body>
+    <script>document.addEventListener('DOMContentLoaded', (event) => {
+            const tagForm = document.getElementById('tag-form');
+            const characterId = "{{ character.id }}"; // Insert the character ID directly into the script
+
+            tagForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(tagForm);
+                const tags = Array.from(formData.getAll('tag'));
+                console.log(tags)
+                fetch(`/character/${characterId}/update_tags`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tags })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        location.reload();
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            });
+        });</script>
+    <center>
+        <h1>{{character.character}}</h1>
+    </center>
+    <h1>Character Tags</h1>
+    <form id="tag-form" autocomplete="off">
+        {% for tag in character.tags %}
+        <div>
+            <input type="checkbox" id="tag-{{ tag.id }}" name="tag" value="{{ tag.id }}" checked>
+            <label for="tag-{{ tag.id }}">{{ tag.name }}</label>
+        </div>
+        {% endfor %}
+        <h1>Other Tags</h1>
+        {% for tag in other_tags %}
+        <div>
+            <input type="checkbox" id="tag-{{ tag.id }}" name="tag" value="{{ tag.id }}">
+            <label for="tag-{{ tag.id }}">{{ tag.name }}</label>
+        </div>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+
+</html>

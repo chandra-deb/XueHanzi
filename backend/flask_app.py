@@ -16,6 +16,11 @@ app.secret_key = 'your_secret_key_here'
 
 db = SQLAlchemy(app=app)
 
+character_tags = db.Table('character_tags',
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True),
+    db.Column('character_id', db.Integer, db.ForeignKey('character.id'), primary_key=True)
+)
+
 class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     hsk_serial = db.Column(db.Integer)
@@ -26,7 +31,8 @@ class Character(db.Model):
     meaning = db.Column(db.String(200))
     can_write = db.Column(db.Boolean, default=False)
     is_known = db.Column(db.Boolean, default=False)
-    tags = db.Column(db.String(500))
+    tags = db.relationship('Tag', secondary=character_tags, lazy='subquery',
+        backref=db.backref('characters', lazy=True))
 
     def __init__(self, hsk_serial,hsk_level, character, pinyin, meaning, tags):
         self.hsk_serial = hsk_serial
@@ -35,17 +41,15 @@ class Character(db.Model):
         self.meaning = meaning
         self.pinyin = pinyin
         self.no_tone_pinyin = unidecode(pinyin)
-        self.tags = tags
+        self.tags = [Tag(name=tag_name) for tag_name in tags]
     
-
-
-
-
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     def __init__(self, name):
         self.name = name
+
+
 
 class SubTag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,6 +59,7 @@ class SubTag(db.Model):
     def __init__(self, name, tag):
         self.name = name
         self.tag = tag
+
 def initialize_database():
     count = 0
     with app.app_context():
@@ -118,9 +123,9 @@ def home():
     page = request.args.get('page', page_number, type=int)
     per_page = 30
     characters = db.session.query(Character).paginate(page=page, per_page=per_page)
-    for chara in characters.items:
-        print("Character: ", chara.tags)
-        print("Tags: ", chara.tags)
+    # for chara in characters.items:
+        # print("Character: ", chara.tags)
+        # print("Tags: ", chara.tags)
     return render_template('index.html', title='Home', characterList=characters.items, next_page_number = page_number +1, prev_page_number = page_number -1)
 
 
@@ -256,9 +261,10 @@ def update_data(char_id):
 @app.route('/kchars')
 def knownchars():
     characters = db.session.query(Character).filter_by(is_known=True).all()
+    tags = db.session.query(Tag).all()
     return render_template('kchars.html',
                         title='Known Characters' , 
-                        characterList=characters, charsLength=len(characters))
+                        characterList=characters, charsLength=len(characters), tags=tags)
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -283,6 +289,80 @@ def showcharsheet(character):
     return render_template('show_char_sheet.html', img_urls=img_urls)
 
 
+@app.route('/tags')
+def tags():
+    tags = Tag.query.all()
+    return render_template('tags.html', tags=tags)
+
+@app.route('/tags/<int:tag_id>')
+def tag_characters(tag_id):
+    tag = Tag.query.get(tag_id)
+    return render_template('tag_characters.html', tag=tag)
+
+@app.route('/add_tag', methods=['POST'])
+def add_tag():
+    # character = request.form['character']
+    add_tag_name = request.form['add-tag'].strip()
+    remove_tag_name = request.form['remove-tag'].strip()
+
+    # Get the character and tag from the database
+    if(len(add_tag_name) > 4):
+    # char = Character.query.filter_by(character=character).first()
+        tag_to_add = Tag.query.filter_by(name=add_tag_name).first()
+        if tag_to_add is None:
+            tag = Tag(name=add_tag_name)
+            db.session.add(tag)
+    if(len(remove_tag_name) > 4):
+        tag_to_remove = Tag.query.filter_by(name=remove_tag_name).first()
+        # If the tag doesn't exist, create it
+        if tag_to_remove:
+            db.session.delete(tag_to_remove)
+    
+    # Add the tag to the character and commit the changes
+    # char.tags.append(tag) 
+    db.session.commit()
+
+    return redirect(url_for('tags'))
+
+@app.route('/character/<int:character_id>/tags')
+def get_character_tags(character_id):
+    character = Character.query.get(character_id)
+    return render_template('character_tags.html', character=character)
+
+
+from flask import request, jsonify
+
+@app.route('/character/<int:character_id>/update_tags', methods=['POST'])
+def update_character_tags(character_id):
+    character = Character.query.get(character_id)
+    if character is None:
+        return "Character not found", 404
+
+    data = request.get_json()
+    new_tags_id = data.get('tags', [])
+    print("New Tags")
+    print(new_tags_id)
+
+    # Remove all existing tags
+    character.tags = []
+
+    # Add new tags
+    for tag_id in new_tags_id:
+        tag = Tag.query.get(tag_id)
+        if tag is not None:   
+            character.tags.append(tag)
+
+    db.session.commit()
+
+    return jsonify({'message': 'Tags updated successfully'})
+
+
+@app.route('/charTags/<int:char_id>')
+def charTags(char_id):
+    character = db.session.query(Character).get(char_id)
+    tags = db.session.query(Tag).all()
+    other_tags = [tag for tag in tags if tag not in character.tags]
+    return render_template('char_tags.html', character=character, other_tags=other_tags)
 
 if __name__ == '__main__':
     # initialize_database()

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
+    <title>Tagged Chars</title>
     <style>
         body {
             background: #34495e;
@@ -64,11 +64,8 @@
 
         .header nav a {
             color: #fff;
-            margin-right: 15px;
-        }
-
-        a {
             text-decoration: none;
+            margin-right: 15px;
         }
 
         .header nav a:last-child {
@@ -118,20 +115,25 @@
                 flex: 0 0 auto;
             }
         }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
     </style>
 </head>
 
 <body>
     <div class="header">
         <div class="logo">
-            <a href="/wpractice" style="color:antiquewhite; text-decoration: none;">
-                <h1>SWP</h1>
+            <a href="/kpractice" style="color:antiquewhite; text-decoration: none;">
+                <h1>SKP</h1>
             </a>
-
         </div>
         <form action="/search" method="post">
             <input style="size: 30px;" type="text" name="query" placeholder="Search">
             <input type="submit" value="Search">
+
 
         </form>
         <nav>
@@ -142,26 +144,12 @@
 
         </nav>
     </div>
-
-
-    <hr size="40px" style="border: none;">
-
-    <center>
-
-        <h2>
-            {{charsLength}}
-        </h2>
-    </center>
-
-    {% for character in characterList %}
-    <div class="card">
-        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
-                }}</a></div>
-        <div class="pinyin">{{character.pinyin}}</div>
-        <div class="meaning">{{character.meaning}}</div>
-        <div class="hsk-level">HSK Level: {{character.hsk_level}}</div>
-    </div>
-    {% endfor %}
+    <h1>Characters for Tag: {{ tag.name }}</h1>
+    <ul>
+        {% for character in tag.characters %}
+        <li>{{ character.character }}</li>
+        {% endfor %}
+    </ul>
 </body>
 
 </html>
