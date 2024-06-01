@@ -193,32 +193,34 @@ def writablechars():
     )
 
 
-@app.route("/kpractice/<string:tags>")
-def kpractice(tags):
-    tags = tags.split("-")
-    practice_characters = []
-    if tags[0] == "all":
-        practice_characters = db.session.query(Character).filter_by(is_known=True).all()
-    else:
-        for tag_name in tags:
-            tag = db.session.query(Tag).filter_by(name=tag_name).first()
-            if tag:
-                chars = (
-                    db.session.query(Character)
-                    .join(Character.tags)
-                    .filter(Tag.name.in_(tags))
-                    .filter(Character.is_known == True)
-                    .all()
-                )
-                practice_characters.extend(chars)
-    error_msg = "No characters found"
-    character = ""
-    try:
-        character = random.choice(practice_characters)
-        error_msg = None
+@app.route("/kpractice", methods=["GET"])
+def kpractice():
+    tag_ids = request.args.getlist("tags")
+    error_msg, character = randomCharacterFrom(tag_ids, is_known=True)
 
-    except IndexError:
-        pass
+    # practice_characters = []
+    # if tags[0] == "all":
+    #     practice_characters = db.session.query(Character).filter_by(is_known=True).all()
+    # else:
+    #     for tag_name in tags:
+    #         tag = db.session.query(Tag).filter_by(name=tag_name).first()
+    #         if tag:
+    #             chars = (
+    #                 db.session.query(Character)
+    #                 .join(Character.tags)
+    #                 .filter(Tag.name.in_(tags))
+    #                 .filter(Character.is_known == True)
+    #                 .all()
+    #             )
+    #             practice_characters.extend(chars)
+    # error_msg = "No characters found"
+    # character = ""
+    # try:
+    #     character = random.choice(practice_characters)
+    #     error_msg = None
+
+    # except IndexError:
+    #     pass
 
     return render_template(
         "known_practice.html", character=character, error_msg=error_msg
