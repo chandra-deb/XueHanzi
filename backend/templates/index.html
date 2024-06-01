@@ -12,63 +12,136 @@
             color: #fff;
         }
 
-        form {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 40px;
+        .card {
+            border: 1px solid #252525;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.1);
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
         }
 
-
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
+        .hanzi {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
             margin-bottom: 20px;
             color: #fff;
         }
 
+        .pinyin,
+        .meaning,
+        .hsk-level {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
 
+        .header {
+            background: #3b5998;
+            height: 60px;
+            width: 100%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
 
-        li:last-child {
+        .header .logo h1 {
+            margin: 0;
+            flex: 1 0 100%;
             text-align: center;
         }
 
-        input[type="checkbox"] {
-            margin-right: 5px;
+        .header nav {
+            flex: 1 0 100%;
+            text-align: center;
+            margin: 10px 0;
         }
 
-        input[type="submit"] {
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .header nav a:last-child {
+            margin-right: 0;
+        }
+
+        .header form {
+            display: flex;
+            align-items: center;
+            flex: 1 0 100%;
+        }
+
+        .header input[type="text"] {
+            margin-right: 10px;
+            flex: 1 0 auto;
+        }
+
+        .header input[type="submit"] {
             background: #007BFF;
             color: #fff;
             border: none;
             border-radius: 5px;
-            padding: 10px 20px;
+            padding: 5px 10px;
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
+        .header input[type="submit"]:hover {
             background: #0056b3;
+        }
+
+        @media (min-width: 600px) {
+            .header {
+                flex-wrap: nowrap;
+            }
+
+            .header .logo h1 {
+                flex: 0 0 auto;
+                text-align: left;
+            }
+
+            .header nav {
+                flex: 0 0 auto;
+                text-align: right;
+            }
+
+            .header form {
+                flex: 0 0 auto;
+            }
+        }
+
+        a {
+            text-decoration: none;
         }
     </style>
 </head>
 
 
 <body>
-    <div class="links">
-        <a href="/">Home</a>
-        <a href="/wchars">CanWrite</a>
-        <a href="/kchars">KnownChars</a>
+    <div class="header">
+        <div class="logo">
+            <h1>XueHanzi</h1>
+        </div>
         <form action="/search" method="post">
-            <input type="text" name="query" placeholder="Search">
+            <input style="size: 30px;" type="text" name="query" placeholder="Search">
             <input type="submit" value="Search">
+
         </form>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/wchars">CanWrite</a>
+            <a href="/kchars">KnownChars</a>
+            <a href="/tags">Tags</a>
+        </nav>
     </div>
+    <hr size="30px" style="border: none;">
     <div class="pagination">
         {% if characterList.has_prev %}
         <a href="{{ url_for('home', page=characterList.prev_num) }}">Previous</a>
@@ -79,23 +152,27 @@
     </div>
 
     {% for character in characterList %}
-    <form action="/update_data/{{character.id}}" method="post">
-        <ul>
-            <li>{{character.character}}</li>
-            <li>{{character.hsk_serial}}</li>
-            <li>
-                Can Write:
-                <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if
-                    character.can_write %}checked{% endif %} />
-            </li>
-            <li>
-                Known:
-                <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
-                    checked {% endif %}>
-            </li>
-            <li><input type="submit" value="Submit"></li>
-        </ul>
-    </form>
+    <div class="card">
+        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
+                }}</a></div>
+        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
+        <div class="meaning">Meaning: {{character.meaning}}</div>
+        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <form action="/update_data/{{character.id}}" method="post">
+
+            Can Write:
+            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
+                %}checked{% endif %} />
+
+            Known:
+            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
+                checked {% endif %}>
+            <input type="submit" value="Submit">
+            <div class="edit-tags">
+                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+            </div>
+        </form>
+    </div>
     {% endfor %}
 </body>
 

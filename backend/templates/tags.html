@@ -168,9 +168,7 @@
 <body>
     <div class="header">
         <div class="logo">
-            <a href="/kpractice" style="color:antiquewhite; text-decoration: none;">
-                <h1>Tags</h1>
-            </a>
+            <h1>Tags</h1>
         </div>
         <form action="/search" method="post">
             <input style="size: 30px;" type="text" name="query" placeholder="Search">
@@ -186,6 +184,7 @@
 
         </nav>
     </div>
+    <hr size="30px" style="border: none;">
 
     {% for tag in tags %}
     <div class="tag-card">
@@ -211,15 +210,14 @@
         </center>
     </div>
     {% endfor %}
+    <hr size="40" style="border: none;">
     <form action="/add_tag" method="POST">
 
 
         <div class="tags">
-            <h2>Tags</h2>
-            <ul>
-                {% for tag in tags %}
-                <li><a href="{{ url_for('tag_characters', tag_id=tag.id) }}">{{ tag.name }}</a></li>
-                {% endfor %}
+
+            <center>
+
                 <form action="/add_tag" method="POST">
 
                     <div>
@@ -233,6 +231,7 @@
                         <input type="submit" value="Remove Tag">
                     </div>
                 </form>
+            </center>
         </div>
 </body>
 
