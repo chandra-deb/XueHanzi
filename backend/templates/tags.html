@@ -190,12 +190,12 @@
     <div class="tag-card">
         <h5>{{ tag.name }}</h5>
         <div class="tag-properties">
-            <p>Words length: {{ tag.words|length }}</p>
-            <p>Can write: {{ tag.can_write|length }}</p>
+            <p>Words Contain: {{ tag.character_count() }}</p>
+            <p>Can write: {{ tag.can_write_count() }}</p>
         </div>
         <div class="tag-properties">
-            <p>Can read: {{ tag.can_read|length }}</p>
-            <p>Totally New: {{ tag.not_of_them|length }}</p>
+            <p>Can read: {{ tag.known_count() }}</p>
+            <p>Totally New: {{ tag.not_marked_count() }}</p>
         </div>
         <center>
 

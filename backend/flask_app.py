@@ -356,8 +356,7 @@ def update_data(char_id):
     db.session.commit()
     print(can_write, known)
 
-    characters = db.session.query(Character).limit(30)
-    return render_template("index.html", title="Home Page", characterList=characters)
+    return redirect(request.referrer)
 
 
 @app.route("/kchars")
