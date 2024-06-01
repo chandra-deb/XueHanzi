@@ -10,16 +10,20 @@ import requests
 app = Flask(__name__)
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///characters.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'your_secret_key_here'
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///characters.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.secret_key = "your_secret_key_here"
 
 db = SQLAlchemy(app=app)
 
-character_tags = db.Table('character_tags',
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True),
-    db.Column('character_id', db.Integer, db.ForeignKey('character.id'), primary_key=True)
+character_tags = db.Table(
+    "character_tags",
+    db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True),
+    db.Column(
+        "character_id", db.Integer, db.ForeignKey("character.id"), primary_key=True
+    ),
 )
+
 
 class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,10 +35,14 @@ class Character(db.Model):
     meaning = db.Column(db.String(200))
     can_write = db.Column(db.Boolean, default=False)
     is_known = db.Column(db.Boolean, default=False)
-    tags = db.relationship('Tag', secondary=character_tags, lazy='subquery',
-        backref=db.backref('characters', lazy=True))
+    tags = db.relationship(
+        "Tag",
+        secondary=character_tags,
+        lazy="subquery",
+        backref=db.backref("characters", lazy=True),
+    )
 
-    def __init__(self, hsk_serial,hsk_level, character, pinyin, meaning, tags):
+    def __init__(self, hsk_serial, hsk_level, character, pinyin, meaning, tags):
         self.hsk_serial = hsk_serial
         self.hsk_level = hsk_level
         self.character = character
@@ -42,29 +50,53 @@ class Character(db.Model):
         self.pinyin = pinyin
         self.no_tone_pinyin = unidecode(pinyin)
         self.tags = [Tag(name=tag_name) for tag_name in tags]
-    
+
+
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+
     def __init__(self, name):
         self.name = name
 
+    def character_count(self):
+        return len(self.characters)
+
+    def can_write_count(self):
+        return len([c for c in self.characters if c.can_write])
+
+    def known_count(self):
+        return len([c for c in self.characters if c.is_known])
+
+    def not_marked_count(self):
+        return len([c for c in self.characters if not c.is_known and not c.can_write])
+
+    def characters_can_write(self):
+        return [c for c in self.characters if c.can_write]
+
+    def characters_known(self):
+        return [c for c in self.characters if c.is_known]
+
+    def characters_not_marked(self):
+        return [c for c in self.characters if not c.is_known and not c.can_write]
 
 
 class SubTag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
-    tag = db.relationship('Tag', backref=db.backref('subtags', lazy=True))
+    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"))
+    tag = db.relationship("Tag", backref=db.backref("subtags", lazy=True))
+
     def __init__(self, name, tag):
         self.name = name
         self.tag = tag
+
 
 def initialize_database():
     count = 0
     with app.app_context():
         db.create_all()
-        count += 1 
+        count += 1
         for level in range(1, 7):
             if level == 1:
                 words = hsk1.words
@@ -80,89 +112,167 @@ def initialize_database():
                 words = hsk6.words
 
             for char in words:
-                translations = ''
-                for translation in char['translations']:
-                    translations += translation + ', '
+                translations = ""
+                for translation in char["translations"]:
+                    translations += translation + ", "
                 character = Character(
-                        hsk_serial=char["id"],
-                        character=char['hanzi'],
-                        pinyin=char['pinyin'],
-                        meaning=translations,
-                        tags='',
-                        hsk_level=level)
+                    hsk_serial=char["id"],
+                    character=char["hanzi"],
+                    pinyin=char["pinyin"],
+                    meaning=translations,
+                    tags="",
+                    hsk_level=level,
+                )
                 db.session.add(character)
 
         print(count)
 
-        db.session.commit() 
+        db.session.commit()
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
-            
-            
-    if username == 'admin' and password == 'learningisearning1':
-        session['username'] = username  # Add the user to the session
-        return redirect(url_for('home'))
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    if username == "admin" and password == "learningisearning1":
+        session["username"] = username  # Add the user to the session
+        return redirect(url_for("home"))
     else:
-        return render_template('login_page.html')
+        return render_template("login_page.html")
+
 
 from flask import request, redirect, url_for
 
+
 @app.before_request
 def require_login():
-    allowed_routes = ['login'] 
-    if 'username' not in session and request.endpoint not in allowed_routes:
-        return redirect(url_for('login'))  
+    allowed_routes = ["login"]
+    if "username" not in session and request.endpoint not in allowed_routes:
+        return redirect(url_for("login"))
 
-@app.route('/')
+
+@app.route("/")
 def home():
     page_number = 1
-    page = request.args.get('page', page_number, type=int)
+    page = request.args.get("page", page_number, type=int)
     per_page = 30
     characters = db.session.query(Character).paginate(page=page, per_page=per_page)
     # for chara in characters.items:
-        # print("Character: ", chara.tags)
-        # print("Tags: ", chara.tags)
-    return render_template('index.html', title='Home', characterList=characters.items, next_page_number = page_number +1, prev_page_number = page_number -1)
+    # print("Character: ", chara.tags)
+    # print("Tags: ", chara.tags)
+    return render_template(
+        "index.html",
+        title="Home",
+        characterList=characters.items,
+        next_page_number=page_number + 1,
+        prev_page_number=page_number - 1,
+    )
 
 
-@app.route('/wchars')
+@app.route("/wchars")
 def writablechars():
     characters = db.session.query(Character).filter_by(can_write=True).all()
-    return render_template('wchars.html',
-                        title='Writable Characters' , 
-                        characterList=characters, charsLength = len(characters))
-
-@app.route('/kpractice')
-def kpractice():
-   writable_characters = db.session.query(Character).filter_by(can_write=True).all()
-   character = random.choice(writable_characters) 
-   return render_template('known_practice.html', character = character)
+    return render_template(
+        "wchars.html",
+        title="Writable Characters",
+        characterList=characters,
+        charsLength=len(characters),
+    )
 
 
-@app.route('/wpractice')
-def wpractice():
-    writable_characters = db.session.query(Character).filter_by(can_write=True).all()
-    character = random.choice(writable_characters)
+@app.route("/kpractice/<string:tags>")
+def kpractice(tags):
+    tags = tags.split("-")
+    practice_characters = []
+    if tags[0] == "all":
+        practice_characters = db.session.query(Character).filter_by(is_known=True).all()
+    else:
+        for tag_name in tags:
+            tag = db.session.query(Tag).filter_by(name=tag_name).first()
+            if tag:
+                chars = (
+                    db.session.query(Character)
+                    .join(Character.tags)
+                    .filter(Tag.name.in_(tags))
+                    .filter(Character.is_known == True)
+                    .all()
+                )
+                practice_characters.extend(chars)
+    error_msg = "No characters found"
+    character = ""
+    try:
+        character = random.choice(practice_characters)
+        error_msg = None
+
+    except IndexError:
+        pass
+
+    return render_template(
+        "known_practice.html", character=character, error_msg=error_msg
+    )
 
 
-    urls = char_link_extractor(character)
-    return render_template('writing_practice.html',
-                        title='Practice' , 
-                        img_urls=urls, character=character)
+@app.route("/wpractice/<string:tags>")
+def wpractice(tags):
+    tags = tags.split("-")
+    practice_characters = []
+    if tags[0] == "all":
+        practice_characters = (
+            db.session.query(Character).filter_by(can_write=True).all()
+        )
+    else:
+        for tag_name in tags:
+            tag = db.session.query(Tag).filter_by(name=tag_name).first()
+            if tag:
+                chars = (
+                    db.session.query(Character)
+                    .join(Character.tags)
+                    .filter(Tag.name.in_(tags))
+                    .filter(Character.can_write == True)
+                    .all()
+                )
+                practice_characters.extend(chars)
+    error_msg = "No characters found"
+    character = ""
+    try:
+        character = random.choice(practice_characters)
+        error_msg = None
 
-def char_link_extractor(character)->list:
+    except IndexError:
+        pass
+
+    # writable_characters = db.session.query(Character).filter_by(can_write=True).all()
+    # character = random.choice(writable_characters)
+
     urls = []
-    characters =[]
+    if character:
+        urls = char_link_extractor(character)
+    return render_template(
+        "writing_practice.html",
+        title="Practice",
+        img_urls=urls,
+        character=character,
+        error_msg=error_msg,
+    )
+
+
+def char_link_extractor(character) -> list:
+    urls = []
+    characters = []
     for single in character.character:
-        if(single not in characters):
+        if single not in characters:
             characters.append(single)
-            urls.append("/strokeorderDownloads/hsk{}/{}.png".format(character.hsk_level,single))
-            urls.append("/strokeorderDownloads/hsk{}/sheets/{}-sheet.png".format(character.hsk_level,single))
+            urls.append(
+                "/strokeorderDownloads/hsk{}/{}.png".format(character.hsk_level, single)
+            )
+            urls.append(
+                "/strokeorderDownloads/hsk{}/sheets/{}-sheet.png".format(
+                    character.hsk_level, single
+                )
+            )
     return urls
+
 
 # @app.route('/wpractice')
 # def wpractice():
@@ -195,54 +305,48 @@ def char_link_extractor(character)->list:
 #                 if img is not None:
 #                     urls.append(f"https://www.strokeorder.com{img['src']}")
 #     return render_template('writing_practice.html',
-#                         title='Practice' , 
+#                         title='Practice' ,
 #                         img_urls=urls, character=character)
 
 
-
-
-@app.route('/character/<character>')
+@app.route("/character/<character>")
 def get_character_image(character):
 
     url = f"https://www.strokeorder.com/chinese/{character}"
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, "html.parser")
 
     # for character sheet
-    div = soup.find('div', class_='stroke-article-content')
+    div = soup.find("div", class_="stroke-article-content")
     if div is not None:
-        img = div.find('img')
+        img = div.find("img")
         if img is not None:
-            print(img['src'])
+            print(img["src"])
 
-    
     # How to write character
 
-    div = soup.find('div', class_='stroke-article-content')
+    div = soup.find("div", class_="stroke-article-content")
     if div is not None:
-        img = div.find('img')
+        img = div.find("img")
         if img is not None:
-            return jsonify({'image_src': f"https://www.strokeorder.com{img['src']}"})
+            return jsonify({"image_src": f"https://www.strokeorder.com{img['src']}"})
 
-    return jsonify({'error': 'Image not found'}), 404
+    return jsonify({"error": "Image not found"}), 404
 
+    # @app.route('how_to_write:<string:character>')
+    # def how_to_write(character):
 
-
-
-# @app.route('how_to_write:<string:character>')
-# def how_to_write(character):
-
-    '''<div class="stroke-article-content">
+    """<div class="stroke-article-content">
 <img src="/assets/bishun/stroke/20320.png" alt="你 Stroke Order Diagrams" title="你 Stroke Order Diagrams">
-</div>'''
+</div>"""
     # return render_template('how_to_write.html', character=character)
 
 
-#generate a route for modifying can_write attribute
-@app.route('/update_data/<int:char_id>', methods=['POST'])
+# generate a route for modifying can_write attribute
+@app.route("/update_data/<int:char_id>", methods=["POST"])
 def update_data(char_id):
-    can_write = 'canwrite' in request.form
-    known = 'known' in request.form
+    can_write = "canwrite" in request.form
+    known = "known" in request.form
     print(f"can write {request.form}")
     character = db.session.query(Character).get(char_id)
     character.can_write = can_write
@@ -250,96 +354,119 @@ def update_data(char_id):
     character.is_known = known
     print(f"is known  {character.is_known}")
     db.session.commit()
-    print(can_write,known)
+    print(can_write, known)
 
     characters = db.session.query(Character).limit(30)
-    return render_template('index.html',
-                        title='Home Page', 
-                        characterList=characters)
-    
+    return render_template("index.html", title="Home Page", characterList=characters)
 
-@app.route('/kchars')
+
+@app.route("/kchars")
 def knownchars():
     characters = db.session.query(Character).filter_by(is_known=True).all()
     tags = db.session.query(Tag).all()
-    return render_template('kchars.html',
-                        title='Known Characters' , 
-                        characterList=characters, charsLength=len(characters), tags=tags)
+    return render_template(
+        "kchars.html",
+        title="Known Characters",
+        characterList=characters,
+        charsLength=len(characters),
+        tags=tags,
+    )
 
-@app.route('/search', methods=['POST'])
+
+@app.route("/search", methods=["POST"])
 def search():
-    query = request.form.get('query').strip()
-    char_results = [char for char in Character.query.filter(Character.character.like(f'%{query}%')).all()]
+    query = request.form.get("query").strip()
+    char_results = [
+        char
+        for char in Character.query.filter(Character.character.like(f"%{query}%")).all()
+    ]
     print(char_results)
-    pinyin_results =   [char for char in Character.query.filter(Character.no_tone_pinyin.like(f'%{query}%')).all()]
-    if(pinyin_results == None):
+    pinyin_results = [
+        char
+        for char in Character.query.filter(
+            Character.no_tone_pinyin.like(f"%{query}%")
+        ).all()
+    ]
+    if pinyin_results == None:
         pinyin_results = []
-    meaning_results = [char for char in Character.query.filter(Character.meaning.like(f'%{query}%')).all()]
-    if(meaning_results == None):
+    meaning_results = [
+        char
+        for char in Character.query.filter(Character.meaning.like(f"%{query}%")).all()
+    ]
+    if meaning_results == None:
         meaning_results = []
-    return render_template('search_results.html', char_results=char_results, pinyin_results=pinyin_results, meaning_results=meaning_results) 
+    return render_template(
+        "search_results.html",
+        char_results=char_results,
+        pinyin_results=pinyin_results,
+        meaning_results=meaning_results,
+    )
 
 
-@app.route('/showcharsheet/<string:character>')
+@app.route("/showcharsheet/<string:character>")
 def showcharsheet(character):
     c = db.session.query(Character).filter_by(character=character).first()
 
     img_urls = char_link_extractor(c)
     print(img_urls)
-    return render_template('show_char_sheet.html', img_urls=img_urls)
+    return render_template("show_char_sheet.html", img_urls=img_urls)
 
 
-@app.route('/tags')
+@app.route("/tags")
 def tags():
     tags = Tag.query.all()
-    return render_template('tags.html', tags=tags)
+    return render_template("tags.html", tags=tags)
 
-@app.route('/tags/<int:tag_id>')
+
+@app.route("/tags/<int:tag_id>")
 def tag_characters(tag_id):
     tag = Tag.query.get(tag_id)
-    return render_template('tag_characters.html', tag=tag)
+    return render_template("tag_characters.html", tag=tag)
 
-@app.route('/add_tag', methods=['POST'])
+
+@app.route("/add_tag", methods=["POST"])
 def add_tag():
     # character = request.form['character']
-    add_tag_name = request.form['add-tag'].strip()
-    remove_tag_name = request.form['remove-tag'].strip()
+    add_tag_name = request.form["add-tag"].strip()
+    remove_tag_name = request.form["remove-tag"].strip()
 
     # Get the character and tag from the database
-    if(len(add_tag_name) > 4):
-    # char = Character.query.filter_by(character=character).first()
+    if len(add_tag_name) > 4:
+        # char = Character.query.filter_by(character=character).first()
         tag_to_add = Tag.query.filter_by(name=add_tag_name).first()
         if tag_to_add is None:
             tag = Tag(name=add_tag_name)
             db.session.add(tag)
-    if(len(remove_tag_name) > 4):
+    if len(remove_tag_name) > 4:
         tag_to_remove = Tag.query.filter_by(name=remove_tag_name).first()
         # If the tag doesn't exist, create it
         if tag_to_remove:
             db.session.delete(tag_to_remove)
-    
+
     # Add the tag to the character and commit the changes
-    # char.tags.append(tag) 
+    # char.tags.append(tag)
     db.session.commit()
 
-    return redirect(url_for('tags'))
+    return redirect(url_for("tags"))
 
-@app.route('/character/<int:character_id>/tags')
+
+@app.route("/character/<int:character_id>/tags")
 def get_character_tags(character_id):
     character = Character.query.get(character_id)
-    return render_template('character_tags.html', character=character)
+    return render_template("character_tags.html", character=character)
 
 
 from flask import request, jsonify
 
-@app.route('/character/<int:character_id>/update_tags', methods=['POST'])
+
+@app.route("/character/<int:character_id>/update_tags", methods=["POST"])
 def update_character_tags(character_id):
     character = Character.query.get(character_id)
     if character is None:
         return "Character not found", 404
 
     data = request.get_json()
-    new_tags_id = data.get('tags', [])
+    new_tags_id = data.get("tags", [])
     print("New Tags")
     print(new_tags_id)
 
@@ -349,22 +476,22 @@ def update_character_tags(character_id):
     # Add new tags
     for tag_id in new_tags_id:
         tag = Tag.query.get(tag_id)
-        if tag is not None:   
+        if tag is not None:
             character.tags.append(tag)
 
     db.session.commit()
 
-    return jsonify({'message': 'Tags updated successfully'})
+    return jsonify({"message": "Tags updated successfully"})
 
 
-@app.route('/charTags/<int:char_id>')
+@app.route("/charTags/<int:char_id>")
 def charTags(char_id):
     character = db.session.query(Character).get(char_id)
     tags = db.session.query(Tag).all()
     other_tags = [tag for tag in tags if tag not in character.tags]
-    return render_template('char_tags.html', character=character, other_tags=other_tags)
+    return render_template("char_tags.html", character=character, other_tags=other_tags)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # initialize_database()
     app.run(debug=True)
-
