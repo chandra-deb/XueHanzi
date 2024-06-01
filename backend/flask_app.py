@@ -213,34 +213,14 @@ def kpractice(tags):
     )
 
 
-@app.route("/wpractice/<string:tags>")
-def wpractice(tags):
-    tags = tags.split("-")
-    practice_characters = []
-    if tags[0] == "all":
-        practice_characters = (
-            db.session.query(Character).filter_by(can_write=True).all()
-        )
-    else:
-        for tag_name in tags:
-            tag = db.session.query(Tag).filter_by(name=tag_name).first()
-            if tag:
-                chars = (
-                    db.session.query(Character)
-                    .join(Character.tags)
-                    .filter(Tag.name.in_(tags))
-                    .filter(Character.can_write == True)
-                    .all()
-                )
-                practice_characters.extend(chars)
-    error_msg = "No characters found"
-    character = ""
-    try:
-        character = random.choice(practice_characters)
-        error_msg = None
+# Test Purpose
+@app.route("/wpractice", methods=["GET"])
+def wpractice():
+    tag_ids = request.args.getlist("tags")
+    print("Tags")
+    print(tag_ids)
 
-    except IndexError:
-        pass
+    error_msg, character = randomCharacterFrom(tag_ids, can_write=True)
 
     # writable_characters = db.session.query(Character).filter_by(can_write=True).all()
     # character = random.choice(writable_characters)
@@ -255,6 +235,98 @@ def wpractice(tags):
         character=character,
         error_msg=error_msg,
     )
+
+
+def randomCharacterFrom(tag_ids, can_write=False, is_known=False):
+    practice_characters = []
+    if len(tag_ids) == 0:
+        if can_write:
+            practice_characters = (
+                db.session.query(Character).filter_by(can_write=True).all()
+            )
+        elif is_known:
+            practice_characters = (
+                db.session.query(Character).filter_by(is_known=True).all()
+            )
+    else:
+        for tag_id in tag_ids:
+            tag = db.session.query(Tag).filter_by(id=tag_id).first()
+            if tag:
+                if can_write:
+                    chars = (
+                        db.session.query(Character)
+                        .join(Character.tags)
+                        .filter(Tag.id.in_(tag_ids))
+                        .filter(Character.can_write == True)
+                        .all()
+                    )
+
+                elif is_known:
+                    chars = (
+                        db.session.query(Character)
+                        .join(Character.tags)
+                        .filter(Tag.id.in_(tag_ids))
+                        .filter(Character.is_known == True)
+                        .all()
+                    )
+
+                practice_characters.extend(chars)
+    error_msg = "No characters found"
+    character = ""
+    try:
+        character = random.choice(practice_characters)
+        error_msg = None
+
+    except IndexError:
+        pass
+    return error_msg, character
+
+
+# test purpose
+
+
+# @app.route("/wpractice/<string:tags>")
+# def wpractice(tags):
+#     tags = tags.split("-")
+#     practice_characters = []
+#     if tags[0] == "all":
+#         practice_characters = (
+#             db.session.query(Character).filter_by(can_write=True).all()
+#         )
+#     else:
+#         for tag_name in tags:
+#             tag = db.session.query(Tag).filter_by(name=tag_name).first()
+#             if tag:
+#                 chars = (
+#                     db.session.query(Character)
+#                     .join(Character.tags)
+#                     .filter(Tag.name.in_(tags))
+#                     .filter(Character.can_write == True)
+#                     .all()
+#                 )
+#                 practice_characters.extend(chars)
+#     error_msg = "No characters found"
+#     character = ""
+#     try:
+#         character = random.choice(practice_characters)
+#         error_msg = None
+
+#     except IndexError:
+#         pass
+
+#     # writable_characters = db.session.query(Character).filter_by(can_write=True).all()
+#     # character = random.choice(writable_characters)
+
+#     urls = []
+#     if character:
+#         urls = char_link_extractor(character)
+#     return render_template(
+#         "writing_practice.html",
+#         title="Practice",
+#         img_urls=urls,
+#         character=character,
+#         error_msg=error_msg,
+#     )
 
 
 def char_link_extractor(character) -> list:

@@ -162,6 +162,11 @@
             justify-content: space-around;
             margin-top: 1rem;
         }
+
+        .tp {
+            /* make this class tag disapear */
+            display: block;
+        }
     </style>
 </head>
 
@@ -185,6 +190,18 @@
         </nav>
     </div>
     <hr size="30px" style="border: none;">
+
+    <div class="tp">
+        <form method="GET" action="/wpractice" style="display: flex; flex-wrap: wrap;">
+            {% for tag in tags %}
+            <div style="margin-right: 10px;">
+                <input type="checkbox" name="tags" value="{{ tag.id }}">
+                <label for="{{ tag.id }}">{{ tag.name }}</label>
+            </div>
+            {% endfor %}
+            <input type="submit" value="Start Practice">
+        </form>
+    </div>
 
     {% for tag in tags %}
     <div class="tag-card">
