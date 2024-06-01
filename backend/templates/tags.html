@@ -119,6 +119,49 @@
         a {
             text-decoration: none;
         }
+
+        /* Tag Card */
+        .tag-card {
+            display: flex;
+            flex-direction: column;
+            /* stack elements vertically */
+            border-bottom: 1px solid #ddd;
+            padding: 1rem;
+            gap: 0.5rem;
+            /* add space between elements */
+        }
+
+        .tag-card h5 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 3px;
+        }
+
+        .tag-card .tag-properties {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            /* allow properties to wrap to the next line */
+        }
+
+        .tag-card p {
+            font-size: 0.9rem;
+            color: #e2cccc;
+            margin: 0;
+        }
+
+        .tag-card a {
+            color: #007bff;
+            text-decoration: none;
+            align-self: flex-end;
+            /* align button to the right */
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 
@@ -126,7 +169,7 @@
     <div class="header">
         <div class="logo">
             <a href="/kpractice" style="color:antiquewhite; text-decoration: none;">
-                <h1>SKP</h1>
+                <h1>Tags</h1>
             </a>
         </div>
         <form action="/search" method="post">
@@ -143,27 +186,54 @@
 
         </nav>
     </div>
-    <div class="tags">
-        <h2>Tags</h2>
-        <ul>
-            {% for tag in tags %}
-            <li><a href="{{ url_for('tag_characters', tag_id=tag.id) }}">{{ tag.name }}</a></li>
-            {% endfor %}
-            <form action="/add_tag" method="POST">
-                <!-- <label for="character">Character:</label>
-                <input type="text" id="character" name="character"> -->
-                <div>
 
-                    <label for="tag">New Tag:</label>
-                    <input type="text" id="tag" name="add-tag">
-                    <input type="submit" value="Add Tag">
-                </div>
-                <div><label for="rtag">Remove Tag:</label>
-                    <input type="text" id="rtag" name="remove-tag">
-                    <input type="submit" value="Remove Tag">
-                </div>
-            </form>
+    {% for tag in tags %}
+    <div class="tag-card">
+        <h5>{{ tag.name }}</h5>
+        <div class="tag-properties">
+            <p>Words length: {{ tag.words|length }}</p>
+            <p>Can write: {{ tag.can_write|length }}</p>
+        </div>
+        <div class="tag-properties">
+            <p>Can read: {{ tag.can_read|length }}</p>
+            <p>Totally New: {{ tag.not_of_them|length }}</p>
+        </div>
+        <center>
+
+            <div class="links">
+
+                <a href="{{ url_for('tag_characters', tag_id=tag.id) }}" style="color:burlywood;">Characters</a>
+                <a href="/wpractice/{{tag.name}}" style="color: cadetblue;">WP</a>
+
+                <a href="/kpractice/{{tag.name}}" style="color:#007BFF;">RP</a>
+            </div>
+
+        </center>
     </div>
+    {% endfor %}
+    <form action="/add_tag" method="POST">
+
+
+        <div class="tags">
+            <h2>Tags</h2>
+            <ul>
+                {% for tag in tags %}
+                <li><a href="{{ url_for('tag_characters', tag_id=tag.id) }}">{{ tag.name }}</a></li>
+                {% endfor %}
+                <form action="/add_tag" method="POST">
+
+                    <div>
+
+                        <label for="tag">New Tag:</label>
+                        <input type="text" id="tag" name="add-tag">
+                        <input type="submit" value="Add Tag">
+                    </div>
+                    <div><label for="rtag">Remove Tag:</label>
+                        <input type="text" id="rtag" name="remove-tag">
+                        <input type="submit" value="Remove Tag">
+                    </div>
+                </form>
+        </div>
 </body>
 
 </html>

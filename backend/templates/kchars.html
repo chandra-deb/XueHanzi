@@ -125,7 +125,7 @@
 <body>
     <div class="header">
         <div class="logo">
-            <a href="/kpractice" style="color:antiquewhite; text-decoration: none;">
+            <a href="/kpractice/all" style="color:antiquewhite; text-decoration: none;">
                 <h1>SKP</h1>
             </a>
         </div>
@@ -142,15 +142,7 @@
         </nav>
     </div>
 
-    <div class="tags">
-        <h2>Tags</h2>
-        <form action="" method="post">
-            {% for tag in tags %}
-            <li><input type="checkbox" name="tag" value="{{ tag.id }}"> {{ tag.name }}</li>
-            {% endfor %}
-        </form>
-        </form>
-    </div>
+
 
 
 
@@ -167,15 +159,23 @@
     <div class="card">
         <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
                 }}</a></div>
-        <div class="pinyin">{{character.pinyin}}</div>
-        <div class="meaning">{{character.meaning}}</div>
-        <div class="hsk-level">HSK Level: {{character.hsk_level}}</div>
-        {% for tag in character.tags %}
-        <h1>{{ tag.name }}</h1>
-        {% endfor %}
-        <div class="edit-tags">
-            <a href="/charTags/{{character.id}}">Edit Tags</a>
-        </div>
+        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
+        <div class="meaning">Meaning: {{character.meaning}}</div>
+        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <form action="/update_data/{{character.id}}" method="post">
+
+            Can Write:
+            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
+                %}checked{% endif %} />
+
+            Known:
+            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
+                checked {% endif %}>
+            <input type="submit" value="Submit">
+            <div class="edit-tags">
+                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+            </div>
+        </form>
     </div>
     {% endfor %}
 

@@ -91,6 +91,9 @@
 
 
     <div class="card" style="background-color: #293e53">
+        {% if error_msg %}
+        <h1>{{ error_msg }}</h1>
+        {% endif %}
         <div class="card-header">
             <h1 class="hidden">{{character.character}}</h1>
             <button onclick="toggleImages()">Show Character</button>
@@ -122,7 +125,7 @@
         }
     </script>
 
-    <center><button style="background-color: #34495e;color: #cde1e9; font-size: 40px;"
+    <center><button style="background-color: #34495e;color: #cde1e9; font-size: 20px;"
             onclick="reloadPage()">Next</button></center>
     <hr size="30" style="border: none;">
     {% for url in img_urls %}

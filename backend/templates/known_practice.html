@@ -69,6 +69,9 @@
     <div class="card">
         <div class="card-header">
             <h1 style="font-size: 4em;">{{character.character}}</h1>
+            {% if error_msg %}
+            <h1>{{ error_msg }}</h1>
+            {% endif %}
             <button id="show">Show</button>
         </div>
         <div class="card-body">
@@ -96,7 +99,7 @@
         }
     </script>
 
-    <center><button style="background-color: #34495e;color: #cde1e9; font-size: 40px;"
+    <center><button style="background-color: #34495e;color: #cde1e9; font-size: 20px;"
             onclick="reloadPage()">Next</button></center>
     <hr size="30" style="border: none;">
 </body>
