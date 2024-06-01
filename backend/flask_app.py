@@ -143,35 +143,21 @@ def wpractice():
     writable_characters = db.session.query(Character).filter_by(can_write=True).all()
     character = random.choice(writable_characters)
 
-    urls = []
-    characters =[]
 
-    for single in character.character:
-        if(single not in characters):
-            characters.append(single)
-
-            # url = f"https://www.strokeorder.com/chinese/{single}"
-            # response = requests.get(url)
-            # soup = BeautifulSoup(response.text, 'html.parser')
-
-
-            # for how to write
-            # div = soup.find_all('div', class_='stroke-article-content')
-            # div_sheet = div[1]
-            # div_char = div[0]
-            # if div_char is not None:
-            #     img = div_char.find('img')
-            #     if img is not None:
-            urls.append("/strokeorderDownloads/hsk{}/{}.png".format(character.hsk_level,single))
-            # for character sheet
-            # if div_sheet is not None:
-            #     img = div_sheet.find('img')
-            #     if img is not None:
-            urls.append("/strokeorderDownloads/hsk{}/sheets/{}-sheet.png".format(character.hsk_level,single))
+    urls = char_link_extractor(character)
     return render_template('writing_practice.html',
                         title='Practice' , 
                         img_urls=urls, character=character)
 
+def char_link_extractor(character)->list:
+    urls = []
+    characters =[]
+    for single in character.character:
+        if(single not in characters):
+            characters.append(single)
+            urls.append("/strokeorderDownloads/hsk{}/{}.png".format(character.hsk_level,single))
+            urls.append("/strokeorderDownloads/hsk{}/sheets/{}-sheet.png".format(character.hsk_level,single))
+    return urls
 
 # @app.route('/wpractice')
 # def wpractice():
@@ -288,6 +274,13 @@ def search():
     return render_template('search_results.html', char_results=char_results, pinyin_results=pinyin_results, meaning_results=meaning_results) 
 
 
+@app.route('/showcharsheet/<string:character>')
+def showcharsheet(character):
+    c = db.session.query(Character).filter_by(character=character).first()
+
+    img_urls = char_link_extractor(c)
+    print(img_urls)
+    return render_template('show_char_sheet.html', img_urls=img_urls)
 
 
 
