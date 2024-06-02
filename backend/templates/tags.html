@@ -337,9 +337,20 @@
             <div class="links">
 
                 <a href="{{ url_for('tag_characters', tag_id=tag.id) }}" style="color:burlywood;">Characters</a>
-                <a href="/wpractice/{{tag.name}}" style="color: cadetblue;">WP</a>
-
-                <a href="/kpractice/{{tag.name}}" style="color:#007BFF;">RP</a>
+                <form id="wp-form" method="GET" action="/wpractice">
+                    <span>
+                        <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
+                        <input style="padding: 5px;border: none;color: white; background:#007BFF;" type="submit"
+                            value="Practice Writing">
+                    </span>
+                </form>
+                <form id="wp-form" method="GET" action="/kpractice">
+                    <span>
+                        <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
+                        <input style="padding: 5px;border: none;color: white; background:#007BFF;" type="submit"
+                            value="Practice Recall">
+                    </span>
+                </form>
             </div>
 
         </center>
