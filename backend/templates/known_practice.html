@@ -59,6 +59,10 @@
             align-items: center;
             width: 100%;
         }
+
+        .card-body div {
+            margin: 8px;
+        }
     </style>
 </head>
 
@@ -68,17 +72,21 @@
     <!--  -->
     <div class="card">
         <div class="card-header">
-            <h1 style="font-size: 4em;">{{character.character}}</h1>
+            <div style="font-size: 6em;">{{character.character}}</div>
             {% if error_msg %}
             <h1>{{ error_msg }}</h1>
             {% endif %}
             <button id="show">Show</button>
         </div>
         <div class="card-body">
-            <!-- <div class="hanzi hidden">{{character.character}}</div> -->
-            <div style="font-size: 1.4em;" class="pinyin hidden">Pinyin: {{character.pinyin}}</div>
-            <div style="font-size: 1.4em;" class="meaning hidden">Meaning: {{character.meaning}}</div>
-            <div style="font-size: 1.4em;" class="hsk-level hidden">HSK Level: {{character.hsk_level}}</div>
+            <div class="hidden"> {{character.pinyin}}</div>
+
+            <div style="font-size: 1.4em;" class="pinyin hidden"><span style="color: aquamarine;">Pinyin:</span>
+                {{character.pinyin}}</div>
+            <div style="font-size: 1.4em;" class="meaning hidden"><span style="color: aquamarine;">Meaning:</span>
+                {{character.meaning}}</div>
+            <div style="font-size: 1.4em;" class="hsk-level hidden"><span style="color: aquamarine;">HSK Level:</span>
+                {{character.hsk_level}}</div>
         </div>
     </div>
     <script>

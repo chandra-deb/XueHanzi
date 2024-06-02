@@ -58,10 +58,11 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            margin-top: 20px;
+            /* margin-top: 12px; */
         }
 
         .card-body p {
+            margin: 8px;
             font-size: 1.2em;
             text-align: center;
         }
@@ -95,12 +96,14 @@
         <h1>{{ error_msg }}</h1>
         {% endif %}
         <div class="card-header">
-            <h1 class="hidden">{{character.character}}</h1>
+            <h1 style="font-size: 6em;" class="hidden">{{character.character}}</h1>
             <button onclick="toggleImages()">Show Character</button>
         </div>
         <div class="card-body">
-            <p>Pinyin: {{character.pinyin}}</p>
-            <p>Meaning: {{character.meaning}}</p>
+            <p><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</p>
+            <p><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</p>
+            <!-- <p><span style="color: aquamarine;">HSK Level:</span>
+                {{character.hsk_level}}</p> -->
         </div>
     </div>
 
