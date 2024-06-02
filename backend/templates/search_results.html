@@ -190,7 +190,7 @@
     </div>
     </div>
     {%if char_results%}
-    <h2>Characters Matches</h2>
+    <h2 style="margin-left: 18px;">Characters Matches</h2>
     {% for character in char_results %}
     <div class="card">
         <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
@@ -222,15 +222,18 @@
 
     {%if pinyin_results%}
     <hr id="pinyin-m" size="40" style="border: none;">
-    <h2>Pinyins Matches</h2>
+    <h2 style="margin-left: 18px;">Pinyin Matches</h2>
     {% for character in pinyin_results %}
 
     <div class="card">
         <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
                 }}</a></div>
-        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
-        <div class="meaning">Meaning: {{character.meaning}}</div>
-        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
+        <br>
         <form action="/update_data/{{character.id}}" method="post">
 
             Can Write:
@@ -242,7 +245,7 @@
                 checked {% endif %}>
             <input type="submit" value="Submit">
             <div class="edit-tags">
-                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+                <a href="/charTags/{{character.id}}" style="color: aqua;">Edit Tags</a>
             </div>
         </form>
     </div>
@@ -253,14 +256,17 @@
     {%if meaning_results%}
     <hr id="meaning-m" size="40" style="border: none;">
 
-    <h2>Meaning Matches</h2>
+    <h2 style="margin-left: 18px;">Meaning Matches</h2>
     {% for character in meaning_results %}
     <div class="card">
         <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
                 }}</a></div>
-        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
-        <div class="meaning">Meaning: {{character.meaning}}</div>
-        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
+        <br>
         <form action="/update_data/{{character.id}}" method="post">
 
             Can Write:
@@ -272,7 +278,7 @@
                 checked {% endif %}>
             <input type="submit" value="Submit">
             <div class="edit-tags">
-                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+                <a href="/charTags/{{character.id}}" style="color: aqua;">Edit Tags</a>
             </div>
         </form>
     </div>

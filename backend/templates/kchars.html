@@ -127,9 +127,7 @@
 <body>
     <div class="header">
         <div class="logo">
-            <a href="/kpractice" style="color:antiquewhite; text-decoration: none;">
-                <h1>Do Recall Practice</h1>
-            </a>
+            <h1>XueHanzi</h1>
         </div>
         <form action="/search" method="post">
             <input style="size: 30px;" type="text" name="query" placeholder="Search">
@@ -154,7 +152,10 @@
     <center>
 
         <h2>
-            {{charsLength}}
+            <a href="/kpractice" style="color:antiquewhite; text-decoration: none; background: #0176f33d;padding: 5px;">
+
+                Do Recall Practice({{charsLength}})
+            </a>
         </h2>
     </center>
     {% for character in characterList %}
