@@ -155,9 +155,9 @@
 
 
     <hr size="30" style="border: none;">
-    <h2>Tag: {{tag.name}}</h2>
+    <h2 style="margin-left: 18px;">Tag: {{tag.name}}</h2>
     <form id="wp-form" method="GET" action="/wpractice">
-        <span>Practice
+        <span style="margin-left: 18px;">Practice
             <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
 
             <input style="color: burlywood;font-size:xx-large; background: none; border: none;" type="submit"
@@ -182,9 +182,12 @@
         <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{
                 character.character
                 }}</a></div>
-        <div class="pinyin">{{character.pinyin}}</div>
-        <div class="meaning">{{character.meaning}}</div>
-        <div class="hsk-level">HSK Level: {{character.hsk_level}}</div>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
+        <br>
         <form action="/update_data/{{character.id}}" method="post">
 
             Can Write:

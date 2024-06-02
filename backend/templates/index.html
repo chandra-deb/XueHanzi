@@ -160,9 +160,12 @@
     <div class="card">
         <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
                 }}</a></div>
-        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
-        <div class="meaning">Meaning: {{character.meaning}}</div>
-        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
+        <br>
         <form action="/update_data/{{character.id}}" method="post">
 
             Can Write:
