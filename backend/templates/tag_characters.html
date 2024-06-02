@@ -204,7 +204,18 @@
         </form>
     </div>
     {% endfor %}
+    <script>window.addEventListener('beforeunload', () => {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        });
 
+        // Set scroll position after page load
+        window.addEventListener('load', () => {
+            const scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                localStorage.removeItem('scrollPosition');
+            }
+        });</script>
 </body>
 
 </html>
