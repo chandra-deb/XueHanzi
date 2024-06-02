@@ -155,7 +155,15 @@
 
 
     <hr size="30" style="border: none;">
-    <h2 style="margin-left: 18px;">Tag: {{tag.name}}</h2>
+    <div style="margin: 10px 0;">
+
+        <h2 style="display: inline;margin-left: 18px;">{{tag.name}} ({{tag.character_count() }})</h2>
+        <a href="/add_bulk_char_in_tag/{{tag.id}}"
+            style="display: inline;margin-left: 18px;color:whitesmoke;background: #007BFF; padding: 4px;">Add
+            Chars
+            In Bulk
+        </a>
+    </div>
     <form id="wp-form" method="GET" action="/wpractice">
         <span style="margin-left: 18px;">Practice
             <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>

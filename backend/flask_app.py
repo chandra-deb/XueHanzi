@@ -638,6 +638,21 @@ def removeTag(char_id, tag_id):
     return redirect(url_for("search_for_tag", tag_id=tag_id))
 
 
+@app.route("/add_bulk_char_in_tag/<int:tag_id>", methods=["GET", "POST"])
+def add_bulk_char_in_tag(tag_id):
+    tag = db.session.query(Tag).get(tag_id)
+    if request.method == "POST":
+        characters = request.form["characters"].split()
+        for character in characters:
+            char = db.session.query(Character).filter_by(character=character).first()
+            if char:
+                if char not in tag.characters:
+                    tag.characters.append(char)
+        db.session.commit()
+        return redirect(url_for("tag_characters", tag_id=tag_id))
+    return render_template("add_bulk_chars_in_tag.html", tag=tag)
+
+
 if __name__ == "__main__":
     # initialize_database()
     app.run(debug=True)
