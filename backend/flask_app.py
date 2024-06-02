@@ -588,6 +588,56 @@ def charTags(char_id):
     return render_template("char_tags.html", character=character, other_tags=other_tags)
 
 
+@app.route("/search-for-tag/<int:tag_id>", methods=["GET", "POST"])
+def search_for_tag(tag_id):
+    tag = Tag.query.get(tag_id)
+
+    if request.method == "POST":
+        query = request.form.get("query").strip()
+        session["query"] = query  # Store the query in the session
+    query = session.get("query", "")
+
+    def get_results(query, attribute):
+        return [
+            {**char.to_dict(), "in_tag": char in tag.characters}
+            for char in Character.query.filter(
+                getattr(Character, attribute).like(f"%{query}%")
+            ).limit(10)
+        ]
+
+    char_results = get_results(query, "character")
+    pinyin_results = get_results(query, "no_tone_pinyin")
+    meaning_results = get_results(query, "meaning")
+
+    return render_template(
+        "search_for_tag_page.html",
+        char_results=char_results,
+        pinyin_results=pinyin_results,
+        meaning_results=meaning_results,
+        tag=tag,
+    )
+
+
+@app.route("/attachTag/<int:char_id>/<int:tag_id>")
+def attachTag(char_id, tag_id):
+    character = db.session.query(Character).get(char_id)
+    tag = db.session.query(Tag).get(tag_id)
+    if tag not in character.tags:
+        character.tags.append(tag)
+        db.session.commit()
+    return redirect(url_for("search_for_tag", tag_id=tag_id))
+
+
+@app.route("/removeTag/<int:char_id>/<int:tag_id>")
+def removeTag(char_id, tag_id):
+    character = db.session.query(Character).get(char_id)
+    tag = db.session.query(Tag).get(tag_id)
+    if tag in character.tags:
+        character.tags.remove(tag)
+        db.session.commit()
+    return redirect(url_for("search_for_tag", tag_id=tag_id))
+
+
 if __name__ == "__main__":
     # initialize_database()
     app.run(debug=True)
