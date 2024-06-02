@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Page</title>
+    <style>
+        /* .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .hanzi {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pinyin,
+        .meaning,
+        .hsk-level {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        } */
+        body {
+            background: #34495e;
+            color: #fff;
+            margin: 0;
+        }
+
+        .card {
+            border: 1px solid #252525;
+            border-radius: 5px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .hanzi {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .pinyin,
+        .meaning,
+        .hsk-level {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        /* For header */
+        .header {
+            background: #3b5998;
+            height: 60px;
+            width: 100%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            box-sizing: border-box;
+        }
+
+        .header .logo h1 {
+            margin: 0;
+            flex: 1 0 100%;
+            text-align: center;
+        }
+
+        .header nav {
+            flex: 1 0 100%;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .header nav a:last-child {
+            margin-right: 0;
+        }
+
+        .header form {
+            display: flex;
+            align-items: center;
+            flex: 1 0 100%;
+        }
+
+        .header input[type="text"] {
+            margin-right: 10px;
+            flex: 1 0 auto;
+        }
+
+        .header input[type="submit"] {
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .header input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        @media (min-width: 600px) {
+            .header {
+                flex-wrap: nowrap;
+            }
+
+            .header .logo h1 {
+                flex: 0 0 auto;
+                text-align: left;
+            }
+
+            .header nav {
+                flex: 0 0 auto;
+                text-align: right;
+            }
+
+            .header form {
+                flex: 0 0 auto;
+            }
+        }
+
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: #3b5998;
+            padding: 12px;
+            font-size: 12px;
+            color: white;
+            text-align: center;
+            z-index: 10;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <h1>XueHanzi</h1>
+        </div>
+        <form action="/search-for-tag/{{tag.id}}" method="post">
+            <input style="size: 30px;" type="text" name="query" placeholder="Search">
+            <input type="submit" value="Search">
+
+        </form>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/wchars">CanWrite</a>
+            <a href="/kchars">KnownChars</a>
+            <a href="/tags">Tags</a>
+        </nav>
+    </div>
+
+
+    <hr size="40px" style="border: none;">
+
+    <div class="sticky">
+
+        <a style="color:aliceblue;" href="#pinyin-m">
+            <h2>Pinyin Matches</h2>
+        </a>
+        <a style="color: aliceblue;" href="#meaning-m">
+            <h2>Meaning Matches</h2>
+        </a>
+    </div>
+    </div>
+    {%if char_results%}
+    <h2 style="margin-left: 18px;">Characters Matches</h2>
+    {% for character in char_results %}
+    <div class="card">
+        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
+                }}</a></div>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
+        <br>
+        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
+        <br>
+        <form action="/update_data/{{character.id}}" method="post">
+
+            Can Write:
+            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
+                %}checked{% endif %} />
+
+            Known:
+            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
+                checked {% endif %}>
+            <input type="submit" value="Submit">
+            <div style="margin-top: 10px;" class="edit-tags">
+                {% if character.in_tag %}
+
+                <a href="/removeTag/{{character.id}}/{{tag.id}}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Remove From
+                    {{tag.name}}</a>
+
+                {% else %}
+                <a href="/attachTag/{{character.id}}/{{tag.id}}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Add To
+                    {{tag.name}}</a>
+                {% endif %}
+                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+            </div>
+        </form>
+        <!-- TODO !im !!Testing -->
+        <!-- <form class="tag-form" autocomplete="off">
+
+            <div class="edit-tags character" data-id="{{character.id}}">
+                <input type="checkbox" id="tag-{{ tag.id }}" name="tag" value="{{ tag.id }}" hidden checked>
+                <button type="submit" label for="tag-{{ tag.id }}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Add to
+                    {{tag.name}}</a>
+            </div>
+        </form> -->
+    </div>
+    {% endfor %}
+    <hr size="20">
+    {%endif%}
+
+    {%if pinyin_results%}
+    <hr id="pinyin-m" size="40" style="border: none;">
+    <h2 style="margin-left: 18px;">Pinyins Matches</h2>
+    {% for character in pinyin_results %}
+
+    <div class="card">
+        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
+                }}</a></div>
+        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
+        <div class="meaning">Meaning: {{character.meaning}}</div>
+        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <form action="/update_data/{{character.id}}" method="post">
+
+            Can Write:
+            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
+                %}checked{% endif %} />
+
+            Known:
+            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
+                checked {% endif %}>
+            <input type="submit" value="Submit">
+            <div style="margin-top: 10px;" class="edit-tags">
+                {% if character.in_tag %}
+
+                <a href="/removeTag/{{character.id}}/{{tag.id}}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Remove From
+                    {{tag.name}}</a>
+
+                {% else %}
+                <a href="/attachTag/{{character.id}}/{{tag.id}}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Add To
+                    {{tag.name}}</a>
+                {% endif %}
+                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+    <hr size="20">
+    {%endif%}
+
+    {%if meaning_results%}
+    <hr id="meaning-m" size="40" style="border: none;">
+
+    <h2 style="margin-left: 18;">Meaning Matches</h2>
+    {% for character in meaning_results %}
+    <div class="card">
+        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
+                }}</a></div>
+        <div class="pinyin">Pinyin: {{character.pinyin}}</div>
+        <div class="meaning">Meaning: {{character.meaning}}</div>
+        <div class="hsk-level">HSK {{character.hsk_level}}</div>
+        <form action="/update_data/{{character.id}}" method="post">
+
+            Can Write:
+            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
+                %}checked{% endif %} />
+
+            Known:
+            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
+                checked {% endif %}>
+            <input type="submit" value="Submit">
+            <div style="margin-top: 10px;" class="edit-tags">
+                {% if character.in_tag %}
+
+                <a href="/removeTag/{{character.id}}/{{tag.id}}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Remove From
+                    {{tag.name}}</a>
+
+                {% else %}
+                <a href="/attachTag/{{character.id}}/{{tag.id}}"
+                    style="border: none;background: #007BFF;color: white;padding: 5px;margin-top: 5px;">Add To
+                    {{tag.name}}</a>
+                {% endif %}
+                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+    <hr size="20">
+    {%endif%}
+
+    <script>window.addEventListener('beforeunload', () => {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        });
+
+        // Set scroll position after page load
+        window.addEventListener('load', () => {
+            const scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                localStorage.removeItem('scrollPosition');
+            }
+        });</script>
+</body>
+
+</html>
