@@ -117,7 +117,7 @@ def initialize_database():
             elif level == 3:
                 words = hsk3.words
             elif level == 4:
-                word = hsk4.words
+                words = hsk4.words
             elif level == 5:
                 words = hsk5.words
             elif level == 6:
