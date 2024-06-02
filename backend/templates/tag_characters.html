@@ -119,6 +119,10 @@
         a {
             text-decoration: none;
         }
+
+        #wp-form {
+            display: inline
+        }
     </style>
     </style>
 </head>
@@ -144,18 +148,37 @@
 
         </nav>
     </div>
+
+
+
+
     <hr size="30" style="border: none;">
     <h2>Tag: {{tag.name}}</h2>
-    <h3>Practice
-        <a href="/wpractice/{{tag.name}}" style="color: cadetblue;font-size: xx-large;">Writing</a>
-        <a href="/kpractice/{{tag.name}}" style="color:#007BFF;font-size: xx-large;">Reading</a>
-        here
-    </h3>
+    <form id="wp-form" method="GET" action="/wpractice">
+        <span>Practice
+            <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
+
+            <input style="color: burlywood;font-size:xx-large; background: none; border: none;" type="submit"
+                value="Writing">
+        </span>
+    </form>
+
+    <form id="wp-form" method="GET" action="/kpractice">
+        <span>
+            <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
+            <input style="color: burlywood;font-size:xx-large; background: none; border: none;" type="submit"
+                value="Reading">
+            here
+        </span>
+    </form>
+    <hr size="5px" style="border: none;">
+
 
 
     {% for character in tag.characters %}
     <div class="card">
-        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
+        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{
+                character.character
                 }}</a></div>
         <div class="pinyin">{{character.pinyin}}</div>
         <div class="meaning">{{character.meaning}}</div>
