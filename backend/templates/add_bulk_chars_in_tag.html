@@ -9,6 +9,7 @@
         body {
             background: #34495e;
             color: #fff;
+            margin: 0;
 
         }
 
@@ -95,6 +96,33 @@
         a {
             text-decoration: none;
         }
+
+        .card {
+            margin: 18px;
+            margin-right: 36px;
+
+        }
+
+        #t-area textarea {
+            color: white;
+            border: none;
+            outline: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 1.4em;
+            background: #3b5998;
+
+
+        }
+
+        #t-area button {
+            color: white;
+            background: #007BFF;
+            border: none;
+            font-size: 1em;
+            padding: 8px;
+            margin-top: 18px;
+        }
     </style>
 </head>
 
@@ -128,9 +156,12 @@
 
     <div class="card">
         <h1>Add bulk characters in {{tag.name}}</h1>
-        <form action="/add_bulk_char_in_tag/{{tag.id}}" method="POST">
+        <form id="t-area" action="/add_bulk_char_in_tag/{{tag.id}}" method="POST">
             <textarea name="characters" id="chars" cols="30" rows="10" required></textarea>
-            <button type="submit">Add</button>
+            <center>
+
+                <button type="submit">Add</button>
+            </center>
         </form>
     </div>
 
