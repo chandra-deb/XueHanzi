@@ -125,8 +125,24 @@
         #wp-form {
             display: inline
         }
+
+        .m-left {
+            margin-left: 18px;
+        }
+
+        #navbar {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 10px;
+            z-index: 1;
+        }
+
+        .current {
+            color: red;
+        }
     </style>
-    </style>
+
 </head>
 
 <body>
@@ -181,37 +197,55 @@
             here
         </span>
     </form>
-    <hr size="5px" style="border: none;">
 
 
-
-    {% for character in tag.characters %}
-    <div class="card">
-        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{
-                character.character
-                }}</a></div>
-        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
-        <br>
-        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
-        <br>
-        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
-        <br>
-        <form action="/update_data/{{character.id}}" method="post">
-
-            Can Write:
-            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
-                %}checked{% endif %} />
-
-            Known:
-            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
-                checked {% endif %}>
-            <input type="submit" value="Submit">
-            <div class="edit-tags">
-                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
-            </div>
-        </form>
+    {% if can_read_characters|length > 0 or can_write_characters|length > 0 or both_characters|length > 0 or
+    totally_new_characters|length > 0 %}
+    <div id="navbar">
+        {% if can_read_characters|length > 0 %}
+        <a href="#can-read">Can Read</a>
+        {% endif %}
+        {% if can_write_characters|length > 0 %}
+        <a href="#can-write">Can Write</a>
+        {% endif %}
+        {% if both_characters|length > 0 %}
+        <a href="#both">Both</a>
+        {% endif %}
+        {% if totally_new_characters|length > 0 %}
+        <a href="#totally-new">Totally New</a>
+        {% endif %}
     </div>
+    {% endif %}
+
+    <hr size="5px" style="border: none;">
+    {% if can_read_characters|length > 0 %}
+    <h2 id="can-read" class="m-left">Can Read ({{can_read_characters|length}})</h2>
+    {% for character in can_read_characters %}
+    {% include 'includes/character_card.html' %}
     {% endfor %}
+    {% endif %}
+
+    {% if can_write_characters|length > 0 %}
+    <h2 id="can-write" class="m-left">Can Write ({{can_write_characters|length}})</h2>
+    {% for character in can_write_characters %}
+    {% include 'includes/character_card.html' %}
+    {% endfor %}
+    {% endif %}
+
+    {% if both_characters|length > 0 %}
+    <h2 id="both" class="m-left">Both ({{both_characters|length}})</h2>
+    {% for character in both_characters %}
+    {% include 'includes/character_card.html' %}
+    {% endfor %}
+    {% endif %}
+
+    {% if totally_new_characters|length > 0 %}
+    <h2 id="totally-new" class="m-left">Totally New ({{totally_new_characters|length}})</h2>
+    {% for character in totally_new_characters %}
+    {% include 'includes/character_card.html' %}
+    {% endfor %}
+    {% endif %}
+
     <script>window.addEventListener('beforeunload', () => {
             localStorage.setItem('scrollPosition', window.scrollY);
         });
@@ -223,7 +257,10 @@
                 window.scrollTo(0, parseInt(scrollPosition));
                 localStorage.removeItem('scrollPosition');
             }
-        });</script>
+        });
+
+
+    </script>
 </body>
 
 </html>
