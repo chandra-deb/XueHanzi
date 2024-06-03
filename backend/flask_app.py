@@ -193,10 +193,15 @@ def writablechars():
     )
 
 
-@app.route("/kpractice", methods=["GET"])
-def kpractice():
+@app.route("/kpractice/<string:condition>", methods=["GET"])
+def kpractice(condition):
     tag_ids = request.args.getlist("tags")
-    error_msg, character = randomCharacterFrom(tag_ids, is_known=True)
+    error_msg = None
+    character = None
+    if condition == "tag-all-chars":
+        error_msg, character = randomCharacterFrom(tag_ids)
+    else:
+        error_msg, character = randomCharacterFrom(tag_ids, is_known=True)
 
     # practice_characters = []
     # if tags[0] == "all":
@@ -228,13 +233,15 @@ def kpractice():
 
 
 # Test Purpose
-@app.route("/wpractice", methods=["GET"])
-def wpractice():
+@app.route("/wpractice/<string:condition>", methods=["GET"])
+def wpractice(condition):
     tag_ids = request.args.getlist("tags")
-    print("Tags")
-    print(tag_ids)
-
-    error_msg, character = randomCharacterFrom(tag_ids, can_write=True)
+    error_msg = None
+    character = None
+    if condition == "tag-all-chars":
+        error_msg, character = randomCharacterFrom(tag_ids)
+    else:
+        error_msg, character = randomCharacterFrom(tag_ids, can_write=True)
 
     # writable_characters = db.session.query(Character).filter_by(can_write=True).all()
     # character = random.choice(writable_characters)
@@ -281,6 +288,14 @@ def randomCharacterFrom(tag_ids, can_write=False, is_known=False):
                         .join(Character.tags)
                         .filter(Tag.id.in_(tag_ids))
                         .filter(Character.is_known == True)
+                        .all()
+                    )
+                # This else clause will return all the character for practice within the tag
+                else:
+                    chars = (
+                        db.session.query(Character)
+                        .join(Character.tags)
+                        .filter(Tag.id.in_(tag_ids))
                         .all()
                     )
 

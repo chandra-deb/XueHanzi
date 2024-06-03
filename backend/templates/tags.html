@@ -345,8 +345,9 @@
 
             <div class="links">
 
-
-                <form id="wp-form" method="GET" action="/wpractice">
+                <button id="practice-button{{tag.id}}"
+                    style="padding: 5px;border: none;color: white; background:#007BFF;">Practice</button>
+                <!-- <form id="wp-form" method="GET" action="/wpractice">
                     <span>
                         <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
                         <input style="padding: 5px;border: none;color: white; background:#007BFF;" type="submit"
@@ -359,12 +360,56 @@
                         <input style="padding: 5px;border: none;color: white; background:#007BFF;" type="submit"
                             value="Practice Recall">
                     </span>
-                </form>
+                </form> -->
             </div>
 
+            <div id="practice-modal{{tag.id}}"
+                style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+                <div
+                    style="background-color: #6e4b4b; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+                    <h2>Select Practice Type</h2>
+                    <form autocomplete="off" id="practice-form{{tag.id}}" method="GET">
+                        <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
+                        <input type="checkbox" id="change-action-checkbox{{tag.id}}"> Narrowed
+                        <br>
+                        <input type="submit" value="Practice Writing" id="writing-button{{tag.id}}">
+                        <input type="submit" value="Practice Recall" id="recall-button{{tag.id}}">
+                    </form>
+                </div>
+            </div>
         </center>
     </div>
+    <script>
+        document.getElementById('practice-button{{tag.id}}').addEventListener('click', function () {
+            document.getElementById('practice-modal{{tag.id}}').style.display = 'block';
+        });
+
+        document.getElementById('change-action-checkbox{{tag.id}}').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('practice-form{{tag.id}}').action = '/wpractice/narrowed';
+            } else {
+                document.getElementById('practice-form{{tag.id}}').action = '/default-action';
+            }
+        });
+
+        document.getElementById('writing-button{{tag.id}}').addEventListener('click', function () {
+            if (document.getElementById('change-action-checkbox{{tag.id}}').checked) {
+                document.getElementById('practice-form{{tag.id}}').action = '/wpractice/narrowed';
+            } else {
+                document.getElementById('practice-form{{tag.id}}').action = '/wpractice/tag-all-chars';
+            }
+        });
+
+        document.getElementById('recall-button{{tag.id}}').addEventListener('click', function () {
+            if (document.getElementById('change-action-checkbox{{tag.id}}').checked) {
+                document.getElementById('practice-form{{tag.id}}').action = '/kpractice/narrowed';
+            } else {
+                document.getElementById('practice-form{{tag.id}}').action = '/kpractice/tag-all-chars';
+            }
+        });
+    </script>
     {% endfor %}
+
     <hr size="40" style="border: none;">
     <form action="/add_tag" method="POST">
 
@@ -404,7 +449,11 @@
                     window.scrollTo(0, parseInt(scrollPosition));
                     localStorage.removeItem('scrollPosition');
                 }
-            });</script>
+            });
+
+            // 
+
+        </script>
 </body>
 
 </html>
