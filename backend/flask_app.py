@@ -643,13 +643,30 @@ def add_bulk_char_in_tag(tag_id):
     tag = db.session.query(Tag).get(tag_id)
     if request.method == "POST":
         characters = request.form["characters"].split()
+        unknown_chars = []
+        total_characters_length = len(characters)
+        already_in_tag_characters = []
+        newly_added_characters = []
         for character in characters:
             char = db.session.query(Character).filter_by(character=character).first()
             if char:
                 if char not in tag.characters:
                     tag.characters.append(char)
+                    newly_added_characters.append(character)
+                else:
+                    already_in_tag_characters.append(character)
+            else:
+                unknown_chars.append(character)
         db.session.commit()
-        return redirect(url_for("tag_characters", tag_id=tag_id))
+        return render_template(
+            "bulk_char_add_report.html",
+            tag=tag,
+            total_characters_length=total_characters_length,
+            unknown_chars=unknown_chars,
+            already_in_tag_characters=already_in_tag_characters,
+            newly_added_characters=newly_added_characters,
+        )
+        # return redirect(url_for("tag_characters", tag_id=tag_id))
     return render_template("add_bulk_chars_in_tag.html", tag=tag)
 
 
