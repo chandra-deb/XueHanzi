@@ -517,7 +517,30 @@ def tags():
 @app.route("/tags/<int:tag_id>")
 def tag_characters(tag_id):
     tag = Tag.query.get(tag_id)
-    return render_template("tag_characters.html", tag=tag)
+
+    can_read_characters = [char for char in tag.characters if char.is_known]
+    can_write_characters = [char for char in tag.characters if char.can_write]
+    both_characters = [
+        char for char in tag.characters if char.is_known and char.can_write
+    ]
+    total_characters = tag.characters
+    totally_new_characters = [
+        char
+        for char in tag.characters
+        if char.is_known == False and char.can_write == False
+    ]  # Assuming 'is_new' attribute exists
+
+    return render_template(
+        "tag_characters.html",
+        tag=tag,
+        can_read_characters=can_read_characters,
+        can_write_characters=can_write_characters,
+        both_characters=both_characters,
+        total_characters=total_characters,
+        totally_new_characters=totally_new_characters,
+    )
+
+    # return render_template("tag_characters.html", tag=tag)
 
 
 @app.route("/add_tag", methods=["POST"])
