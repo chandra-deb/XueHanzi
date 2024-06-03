@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Character Add Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        p,
+        li {
+            color: #666;
+        }
+
+        .report-section {
+            background-color: #fff;
+            margin: 20px auto;
+            width: 80%;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .done-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .done-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="report-section">
+        <h1>Bulk Character Add Report for {{ tag.name }}</h1>
+
+        <p>Total characters: {{ total_characters_length }}</p>
+
+        {% if newly_added_characters|length > 0 %}
+        <h2>Newly Added Characters</h2>
+        <p>Count: {{ newly_added_characters|length }}</p>
+        <ul>
+            {% for character in newly_added_characters %}
+            <li>{{ character }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if already_in_tag_characters|length > 0 %}
+        <h2>Characters Already in Tag</h2>
+        <p>Count: {{ already_in_tag_characters|length }}</p>
+        <ul>
+            {% for character in already_in_tag_characters %}
+            <li>{{ character }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if unknown_chars|length > 0 %}
+        <h2>Unknown Characters</h2>
+        <p>Count: {{ unknown_chars|length }}</p>
+        <ul>
+            {% for character in unknown_chars %}
+            <li>{{ character }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+
+        <a class="done-link" href="{{ url_for('tag_characters', tag_id=tag.id) }}">Ok</a>
+    </div>
+</body>
+
+</html>
