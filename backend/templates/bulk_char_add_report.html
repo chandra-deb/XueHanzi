@@ -121,6 +121,31 @@
         a {
             text-decoration: none;
         }
+
+        .done-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+        }
+
+        .report-section {
+            background-color: #3b5898a8;
+            margin: 20px auto;
+            width: 90%;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        p,
+        li {
+            color: #d3d0d0;
+        }
+
+        a {
+            color: whitesmoke;
+        }
     </style>
 </head>
 
@@ -143,7 +168,7 @@
     </div>
     <hr size="30px" style="border: none;">
     <div class="report-section">
-        <h1>Bulk Character Add Report for {{ tag.name }}</h1>
+        <h2>Bulk Character Add Report for {{ tag.name }}</h2>
 
         <p>Total characters: {{ total_characters_length }}</p>
 
