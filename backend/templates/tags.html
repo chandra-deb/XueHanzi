@@ -178,6 +178,7 @@
             max-width: 600px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
         }
 
         .tp form {
@@ -245,6 +246,37 @@
         .tags form input[type="submit"]:hover {
             background: #0056b3;
         }
+
+
+        .input-popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+
+        }
+
+
+        .close-button {
+            background: red;
+            top: 10px;
+            right: 10px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        body {
+            background: #34495e;
+            color: #fff;
+            margin: 0;
+        }
     </style>
 </head>
 
@@ -277,40 +309,9 @@
         </center>
     </div>
     <hr style="border: none;">
-    <script>
-        // function toggleTagsDiv() {
-        //     var div = document.querySelector('.tags');
-        //     if (div.style.display != "block") {
-        //         div.style.display = "block";
-        //     } else {
-        //         div.style.display = "none";
-        //     }
-        // }
-        function setFormAction(form, action) {
-            form.action = action;
-        }
 
-        function toggleElement(id) {
-            var div = document.getElementById(id);
-            if (div.style.display !== "block") {
-                div.style.display = "block";
-            } else {
-                div.style.display = "none";
-            }
-        }
-        // function toggleDiv() {
-        //     var div = document.getElementById('practiceDiv');
-        //     if (div.style.display !== "block") {
-        //         div.style.display = "block";
-        //     } else {
-        //         div.style.display = "none";
-        //     }
-        // }
-
-    </script>
     <div class="tp" id="practiceDiv">
-        <button onclick="toggleElement('practiceDiv')"
-            style="position: absolute; top: 10px; right: 10px;">Close</button>
+        <button onclick="toggleElement('practiceDiv')" class="close-button">Close</button>
         <br>
         <form method="GET" id="practiceForm" style="display: flex; flex-wrap: wrap;">
             {% for tag in tags %}
@@ -358,37 +359,29 @@
 
                 <button id="practice-button{{tag.id}}"
                     style="padding: 5px;border: none;color: white; background:#007BFF;">Practice</button>
-                <!-- <form id="wp-form" method="GET" action="/wpractice">
-                    <span>
-                        <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
-                        <input style="padding: 5px;border: none;color: white; background:#007BFF;" type="submit"
-                            value="Practice Writing">
-                    </span>
-                </form>
-                <form id="wp-form" method="GET" action="/kpractice">
-                    <span>
-                        <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
-                        <input style="padding: 5px;border: none;color: white; background:#007BFF;" type="submit"
-                            value="Practice Recall">
-                    </span>
-                </form> -->
+
             </div>
 
-            <div id="practice-modal{{tag.id}}"
-                style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-                <div
-                    style="background-color: #6e4b4b; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
-                    <button onclick="toggleDiv()" style="position: absolute; top: 10px; right: 10px;">Close</button>
+            <div class="tp" id="practice-modal{{tag.id}}">
 
-                    <h2>Select Practice Type</h2>
-                    <form autocomplete="off" id="practice-form{{tag.id}}" method="GET">
-                        <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
-                        <input type="checkbox" id="change-action-checkbox{{tag.id}}"> Narrowed
-                        <br>
-                        <input type="submit" value="Practice Writing" id="writing-button{{tag.id}}">
-                        <input type="submit" value="Practice Recall" id="recall-button{{tag.id}}">
-                    </form>
-                </div>
+
+                <button class="close-button" onclick="toggleElement('practice-modal{{tag.id}}')">Close</button>
+
+
+                <h2>Select Practice Type</h2>
+                <form autocomplete="off" id="practice-form{{tag.id}}" method="GET">
+                    <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
+                    <input type="checkbox" id="change-action-checkbox{{tag.id}}">
+                    <label for="change-action-checkbox{{tag.id}}">
+                        <span>
+                            Marked Only
+                        </span>
+
+                    </label>
+                    <br>
+                    <input type="submit" value="Practice Writing" id="writing-button{{tag.id}}">
+                    <input type="submit" value="Practice Recall" id="recall-button{{tag.id}}">
+                </form>
             </div>
         </center>
     </div>
@@ -428,8 +421,7 @@
 
 
         <div id="tags">
-            <button type="button" onclick="toggleElement('tags')"
-                style="position: absolute; top: 10px; right: 10px;">Close</button>
+            <button type="button" onclick="toggleElement('tags')" class="close-button">Close</button>
 
 
             <center>
@@ -465,6 +457,22 @@
             });
 
             // 
+
+            function setFormAction(form, action) {
+                form.action = action;
+            }
+
+            function toggleElement(id) {
+                var div = document.getElementById(id);
+                if (div.style.display !== "block") {
+                    div.style.display = "block";
+
+                } else {
+                    div.style.display = "none";
+
+                }
+            }
+
 
         </script>
 </body>
