@@ -203,11 +203,11 @@
             background: #0056b3;
         }
 
-        #practiceDiv {
+        /* #practiceDiv {
             display: none;
-        }
+        } */
 
-        .tags {
+        #tags {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -270,36 +270,47 @@
     <hr size="50px" style="border: none;">
     <div>
         <center>
-            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleDiv()">Practice</button>
-            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleTagsDiv()">Modify
+            <button style="background:#007BFF;color: #fff; padding: 10px;"
+                onclick="toggleElement('practiceDiv')">Practice</button>
+            <button style="background:#007BFF;color: #fff; padding: 10px;" onclick="toggleElement('tags')">Modify
                 Tags</button>
         </center>
     </div>
     <hr style="border: none;">
     <script>
-        function toggleTagsDiv() {
-            var div = document.querySelector('.tags');
-            if (div.style.display != "block") {
-                div.style.display = "block";
-            } else {
-                div.style.display = "none";
-            }
-        }
+        // function toggleTagsDiv() {
+        //     var div = document.querySelector('.tags');
+        //     if (div.style.display != "block") {
+        //         div.style.display = "block";
+        //     } else {
+        //         div.style.display = "none";
+        //     }
+        // }
         function setFormAction(form, action) {
             form.action = action;
         }
-        function toggleDiv() {
-            var div = document.getElementById('practiceDiv');
+
+        function toggleElement(id) {
+            var div = document.getElementById(id);
             if (div.style.display !== "block") {
                 div.style.display = "block";
             } else {
                 div.style.display = "none";
             }
         }
+        // function toggleDiv() {
+        //     var div = document.getElementById('practiceDiv');
+        //     if (div.style.display !== "block") {
+        //         div.style.display = "block";
+        //     } else {
+        //         div.style.display = "none";
+        //     }
+        // }
 
     </script>
     <div class="tp" id="practiceDiv">
-        <button onclick="toggleDiv()" style="position: absolute; top: 10px; right: 10px;">Close</button>
+        <button onclick="toggleElement('practiceDiv')"
+            style="position: absolute; top: 10px; right: 10px;">Close</button>
         <br>
         <form method="GET" id="practiceForm" style="display: flex; flex-wrap: wrap;">
             {% for tag in tags %}
@@ -367,6 +378,8 @@
                 style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
                 <div
                     style="background-color: #6e4b4b; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+                    <button onclick="toggleDiv()" style="position: absolute; top: 10px; right: 10px;">Close</button>
+
                     <h2>Select Practice Type</h2>
                     <form autocomplete="off" id="practice-form{{tag.id}}" method="GET">
                         <input type="checkbox" name="tags" value="{{ tag.id }}" id="{{tag.id}}" checked hidden>
@@ -414,8 +427,8 @@
     <form action="/add_tag" method="POST">
 
 
-        <div class="tags">
-            <button type="button" onclick="toggleTagsDiv()"
+        <div id="tags">
+            <button type="button" onclick="toggleElement('tags')"
                 style="position: absolute; top: 10px; right: 10px;">Close</button>
 
 
