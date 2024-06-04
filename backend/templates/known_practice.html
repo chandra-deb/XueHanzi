@@ -20,15 +20,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            justify-content: space-around;
+
             padding: 20px;
             margin: 20px;
             max-width: 600px;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
             transition: 0.3s;
-            background-color: rgba(8, 8, 8, 0.151);
 
         }
 
@@ -59,10 +56,42 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
+            text-align: center;
         }
 
-        .card-body div {
+        /* .card-body {
             margin: 8px;
+        } */
+
+        a {
+            color: whitesmoke;
+        }
+
+        .know-not-confirmation {
+            position: fixed;
+            bottom: 0;
+        }
+
+        .card-body {
+
+            width: 100%;
+            display: flex;
+            text-align: center;
+            position: absolute;
+            direction: column;
+            justify-content: center;
+            top: 30%;
+        }
+
+        .satire {
+            width: 100%;
+            display: flex;
+            text-align: center;
+            position: absolute;
+            direction: column;
+            vertical-align: middle;
+            justify-content: center;
+            top: 30%;
         }
     </style>
 </head>
@@ -71,34 +100,71 @@
 
 
     <!--  -->
-    <div class="card">
-        <div class="card-header">
-            <div style="font-size: 6em;">{{character.character}}</div>
-            {% if error_msg %}
-            <h1>{{ error_msg }}</h1>
-            {% endif %}
-            <button id="show">Show</button>
-        </div>
-        <div class="card-body">
-            <div class="hidden"> {{character.pinyin}}</div>
+    {% if error_msg %}
+    <center>
+        <h2>You first need to add characters here to practice!</h2>
+    </center>
+    {% else %}
 
-            <div style="font-size: 1.4em;" class="pinyin hidden"><span style="color: aquamarine;">Pinyin:</span>
-                {{character.pinyin}}</div>
-            <div style="font-size: 1.4em;" class="meaning hidden"><span style="color: aquamarine;">Meaning:</span>
-                {{character.meaning}}</div>
-            <div style="font-size: 1.4em;" class="hsk-level hidden"><span style="color: aquamarine;">HSK Level:</span>
-                {{character.hsk_level}}</div>
+    <div class="card-header">
+        <div class="card">
+            <div style="font-size: 6em;">{{character.character}}</div>
+
         </div>
     </div>
+    <div class="card-body">
+
+        <div class="hidden"> {{character.pinyin}}</div>
+        <div style="font-size: 1.4em;" class="pinyin hidden"><span style="color: aquamarine;">Pinyin:</span>
+            {{character.pinyin}}</div>
+        <div style="font-size: 1.4em;" class="meaning hidden"><span style="color: aquamarine;">Meaning:</span>
+            {{character.meaning}}</div>
+        <div style="font-size: 1.4em;" class="hsk-level hidden"><span style="color: aquamarine;">HSK
+                Level:</span>
+            {{character.hsk_level}}
+        </div>
+    </div>
+
+
+    <div class="satire">
+        <p>
+            {% if character.is_known %}
+            You should know this character 😏
+            {% else %}
+            You may not know this character 🥲
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="know-not-confirmation">
+        <form action="/update_data/{{character.id}}" method="post">
+            <input type="checkbox" id="known_{{character.id}}" name="dknown" value="on" hidden checked>
+            <input type="submit" value="I don't know">
+        </form>
+        <button id="show">Show</button>
+
+        <form action="/update_data/{{character.id}}" method="post">
+
+            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" hidden checked>
+            <input type="submit" value="I think I know">
+        </form>
+        <center><button style="background-color: #34495e;color: #cde1e9; font-size: 20px;" onclick="reloadPage()">Skim
+                Through</button></center>
+    </div>
+    {% endif %}
     <script>
         const showButton = document.getElementById('show');
-        // const hanzi = document.querySelector('.hanzi');
+        const satire = document.querySelector('.satire');
         const pinyin = document.querySelector('.pinyin');
         const meaning = document.querySelector('.meaning');
         const hskLevel = document.querySelector('.hsk-level');
 
+
         showButton.addEventListener('click', () => {
+
+            satire.classList.toggle('hidden');
             pinyin.classList.toggle('hidden');
+
             meaning.classList.toggle('hidden');
             hskLevel.classList.toggle('hidden');
         });
@@ -108,9 +174,7 @@
         }
     </script>
 
-    <center><button style="background-color: #34495e;color: #cde1e9; font-size: 20px;"
-            onclick="reloadPage()">Next</button></center>
-    <hr size="30" style="border: none;">
+    <!-- <hr size="30" style="border: none;"> -->
 </body>
 
 </html>
