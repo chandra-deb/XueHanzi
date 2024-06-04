@@ -97,6 +97,47 @@
         .satire p {
             font-size: 1.2em;
         }
+
+        .know-not-confirmation {
+            width: 100%;
+            margin: 0;
+
+        }
+
+        .know-not-confirmation center button {
+            width: 90%;
+            border: none;
+            border-radius: 5px;
+            background: rgba(3, 230, 199, 0.76);
+            color: whitesmoke;
+            margin: 5px;
+            padding: 12px;
+            font-size: 1.2em;
+        }
+
+        .know-not-confirmation center button :hover {
+            background: rgba(105, 121, 119, 0.96);
+        }
+
+
+
+
+        .ac-btns {
+
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .ac-btns button {
+            background: rgba(3, 230, 199, 0.76);
+            border: none;
+            margin: 5px;
+            padding: 12px;
+            border-radius: 5px;
+            color: whitesmoke;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 
@@ -141,18 +182,31 @@
     </div>
 
     <div class="know-not-confirmation">
-        <form action="/update_data/{{character.id}}" method="post">
-            <input type="checkbox" id="known_{{character.id}}" name="dknown" value="on" hidden checked>
-            <input type="submit" value="I don't know">
-        </form>
-        <button id="show">Show</button>
+        <div class="ac-btns">
 
-        <form action="/update_data/{{character.id}}" method="post">
+            <div>
 
-            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" hidden checked>
-            <input type="submit" value="I think I know">
-        </form>
-        <center><button style="background-color: #34495e;color: #cde1e9; font-size: 20px;" onclick="reloadPage()">Skim
+                <form action="/update_data/{{character.id}}" method="post">
+                    <input type="checkbox" id="known_{{character.id}}" name="dknown" value="on" hidden checked>
+                    <button type="submit" value="I don't know"> I don't know</button>
+                </form>
+            </div>
+            <div>
+
+                <button id="show">Show</button>
+            </div>
+            <div>
+
+                <form action="/update_data/{{character.id}}" method="post">
+
+                    <input type="checkbox" id="known_{{character.id}}" name="known" value="on" hidden checked>
+                    <button type="submit" value="I think I know"> I think I known </button>
+                </form>
+            </div>
+        </div>
+
+
+        <center><button onclick="reloadPage()">Skim
                 Through</button></center>
     </div>
     {% endif %}
