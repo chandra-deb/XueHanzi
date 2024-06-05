@@ -120,13 +120,18 @@
             }
         }
 
-        a {
+        .flex-practice-container a {
+            padding: 12px;
+            border-radius: 6px;
+            background: #0057b3c0;
             text-decoration: none;
+            color: whitesmoke;
         }
 
         .flex-container {
             display: flex;
             flex-direction: column;
+
             width: 100%;
             margin: 20px 0;
 
@@ -134,7 +139,7 @@
 
         .flex-row {
             display: flex;
-            background-color: #3b5998;
+            background-color: #3b5898b4;
 
         }
 
@@ -282,7 +287,7 @@
     <div class="flex-practice-container">
         {% for level in range(1, 7) %}
         <div class="flex-row">
-            <div class="flex-item"><a href="/characters/hsk{{ level }}">HSK {{ level }}</a></div>
+            <div class="flex-item"><a href="/hsk/{{ level }}">HSK {{ level }}</a></div>
             <div class="flex-item">
                 <button onclick="openModal('hsk{{ level }}')" class="practice-button">Do Practice</button>
             </div>
