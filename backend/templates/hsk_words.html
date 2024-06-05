@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSK {{level}}</title>
+    <style>
+        body {
+            background: #34495e;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+        }
+
+        .header {
+            background: #3b5998;
+            height: 60px;
+            width: 100%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            box-sizing: border-box;
+        }
+
+        .header .logo h1 {
+            margin: 0;
+            flex: 1 0 100%;
+            text-align: center;
+            font-size: 38px;
+        }
+
+        .header nav {
+            flex: 1 0 100%;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .header nav a:last-child {
+            margin-right: 0;
+        }
+
+        .header form {
+            display: flex;
+            align-items: center;
+            flex: 1 0 100%;
+        }
+
+        .header input[type="text"] {
+            margin-right: 10px;
+            flex: 1 0 auto;
+        }
+
+        .header input[type="submit"] {
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .header input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        @media (min-width: 600px) {
+            .header {
+                flex-wrap: nowrap;
+            }
+
+            .header .logo h1 {
+                flex: 0 0 auto;
+                text-align: left;
+            }
+
+            .header nav {
+                flex: 0 0 auto;
+                text-align: right;
+            }
+
+            .header form {
+                flex: 0 0 auto;
+            }
+        }
+
+        .characters {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(calc(100% / 5), 1fr));
+            gap: 0.5em;
+        }
+
+        .character {
+            padding: 0.5em;
+            text-align: center;
+            font-size: 1.2em;
+            /* Increase the font size */
+            border-radius: 5px;
+        }
+
+
+        .known {
+            background-color: blue;
+        }
+
+        .unknown {
+            background-color: #003f5cb6;
+        }
+
+        .can-write {
+            background-color: #ffd380;
+        }
+
+        .cannot-write {
+            background-color: #003f5cb6;
+        }
+
+        .can-read-write {
+            background-color: red;
+        }
+
+        a {
+            color: whitesmoke;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            <a href="/" style="text-decoration: none; color: antiquewhite;">
+                <h1>XueHanzi</h1>
+            </a>
+        </div>
+        <form action="/search" method="post">
+            <input style="size: 30px;" type="text" name="query" placeholder="Search">
+            <input type="submit" value="Search">
+
+        </form>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/wchars">CanWrite</a>
+            <a href="/kchars">KnownChars</a>
+            <a href="/tags">Tags</a>
+        </nav>
+    </div>
+    <hr size="40px" style="border: none;">
+
+    <div class="characters">
+        {% for character in characters %}
+
+        <a href="/character/{{ character.id }}">
+            <div class="character 
+            {{ 'known' if character.known else 'unknown' }} 
+            {{ 'can-write' if character.can_write else 'cannot-write' }} 
+            {{ 'can-read-write' if character.can_read and character.can_write else '' }}">
+                {{ character.character }}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
