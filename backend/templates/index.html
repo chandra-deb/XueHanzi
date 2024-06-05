@@ -311,7 +311,9 @@
         var markedWritingLink = document.getElementById("markedWritingLink");
 
         function openModal(level) {
-            modalText.textContent = 'Choose a practice type for ' + level;
+            forShowing = level.replace('hsk', '');
+            console.log(forShowing)
+            modalText.textContent = 'Choose a practice type for ' + 'HSK ' + forShowing;
             readingLink.href = '/kpractice/' + level;
             markedReadingLink.href = '/kpractice/' + level + '-marked';
             writingLink.href = '/wpractice/' + level;
