@@ -394,18 +394,16 @@ def get_character_image(character):
 @app.route("/update_data/<int:char_id>", methods=["POST"])
 def update_data(char_id):
     can_write = "canwrite" in request.form
-    can_not_write = "cannotwrite" in request.form
     known = "known" in request.form
-    dknown = "dknown" in request.form
     character = db.session.query(Character).get(char_id)
-    if can_write:
-        character.can_write = can_write
-    if can_not_write:
-        character.can_write = False
     if known:
         character.is_known = known
-    if dknown:
+    else:
         character.is_known = False
+    if can_write:
+        character.can_write = can_write
+    else:
+        character.can_write = False
     db.session.commit()
 
     return redirect(request.referrer)
