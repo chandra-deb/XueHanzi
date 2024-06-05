@@ -110,24 +110,20 @@
 
 
         .known {
-            background-color: blue;
+            background-color: cadetblue;
         }
 
         .unknown {
-            background-color: #003f5cb6;
+            background-color: #003f5c4f;
         }
 
         .can-write {
-            background-color: #ffd380;
+            background-color: rgba(2, 158, 2, 0.863);
         }
 
-        .cannot-write {
-            background-color: #003f5cb6;
-        }
 
-        .can-read-write {
-            background-color: red;
-        }
+
+
 
         a {
             color: whitesmoke;
@@ -159,15 +155,27 @@
 
     <div class="characters">
         {% for character in characters %}
-
+        {% if character.can_write %}
         <a href="/character/{{ character.id }}">
-            <div class="character 
-            {{ 'known' if character.known else 'unknown' }} 
-            {{ 'can-write' if character.can_write else 'cannot-write' }} 
-            {{ 'can-read-write' if character.can_read and character.can_write else '' }}">
+            <div class="character can-write">
                 {{ character.character }}
             </div>
         </a>
+        {% elif character.is_known %}
+        <a href="/character/{{ character.id }}">
+            <div class="character known">
+                {{ character.character }}
+            </div>
+        </a>
+
+
+        {% else %}
+        <a href="/character/{{ character.id }}">
+            <div class="character unknown">
+                {{ character.character }}
+            </div>
+        </a>
+        {% endif %}
         {% endfor %}
     </div>
 </body>
