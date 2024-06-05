@@ -9,6 +9,17 @@ import requests
 
 app = Flask(__name__)
 
+key_of_prev_url_of_reading = "previous_url_of_reading"
+key_of_prev_url_of_writing = "previous_url_of_writing"
+
+
+def get_prev_url(reading=False, writing=False):
+    if reading:
+        return session.get(key_of_prev_url_of_reading, "/")
+    elif writing:
+        return session.get(key_of_prev_url_of_writing, "/")
+    return "/"
+
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///characters.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -184,6 +195,8 @@ def home():
 
 @app.route("/wchars")
 def writablechars():
+    session[key_of_prev_url_of_writing] = request.url
+
     characters = db.session.query(Character).filter_by(can_write=True).all()
     return render_template(
         "wchars.html",
@@ -195,6 +208,7 @@ def writablechars():
 
 @app.route("/kpractice/<string:condition>", methods=["GET"])
 def kpractice(condition):
+
     tag_ids = request.args.getlist("tags")
     error_msg = None
     character = None
@@ -202,39 +216,19 @@ def kpractice(condition):
         error_msg, character = randomCharacterFrom(tag_ids)
     else:
         error_msg, character = randomCharacterFrom(tag_ids, is_known=True)
-
-    # practice_characters = []
-    # if tags[0] == "all":
-    #     practice_characters = db.session.query(Character).filter_by(is_known=True).all()
-    # else:
-    #     for tag_name in tags:
-    #         tag = db.session.query(Tag).filter_by(name=tag_name).first()
-    #         if tag:
-    #             chars = (
-    #                 db.session.query(Character)
-    #                 .join(Character.tags)
-    #                 .filter(Tag.name.in_(tags))
-    #                 .filter(Character.is_known == True)
-    #                 .all()
-    #             )
-    #             practice_characters.extend(chars)
-    # error_msg = "No characters found"
-    # character = ""
-    # try:
-    #     character = random.choice(practice_characters)
-    #     error_msg = None
-
-    # except IndexError:
-    #     pass
-
     return render_template(
-        "known_practice.html", character=character, error_msg=error_msg
+        "known_practice.html",
+        character=character,
+        error_msg=error_msg,
+        prev_url=get_prev_url(reading=True),
     )
 
 
 # Test Purpose
 @app.route("/wpractice/<string:condition>", methods=["GET"])
 def wpractice(condition):
+    session[key_of_prev_url_of_writing] = request.url
+
     tag_ids = request.args.getlist("tags")
     error_msg = None
     character = None
@@ -309,53 +303,6 @@ def randomCharacterFrom(tag_ids, can_write=False, is_known=False):
     except IndexError:
         pass
     return error_msg, character
-
-
-# test purpose
-
-
-# @app.route("/wpractice/<string:tags>")
-# def wpractice(tags):
-#     tags = tags.split("-")
-#     practice_characters = []
-#     if tags[0] == "all":
-#         practice_characters = (
-#             db.session.query(Character).filter_by(can_write=True).all()
-#         )
-#     else:
-#         for tag_name in tags:
-#             tag = db.session.query(Tag).filter_by(name=tag_name).first()
-#             if tag:
-#                 chars = (
-#                     db.session.query(Character)
-#                     .join(Character.tags)
-#                     .filter(Tag.name.in_(tags))
-#                     .filter(Character.can_write == True)
-#                     .all()
-#                 )
-#                 practice_characters.extend(chars)
-#     error_msg = "No characters found"
-#     character = ""
-#     try:
-#         character = random.choice(practice_characters)
-#         error_msg = None
-
-#     except IndexError:
-#         pass
-
-#     # writable_characters = db.session.query(Character).filter_by(can_write=True).all()
-#     # character = random.choice(writable_characters)
-
-#     urls = []
-#     if character:
-#         urls = char_link_extractor(character)
-#     return render_template(
-#         "writing_practice.html",
-#         title="Practice",
-#         img_urls=urls,
-#         character=character,
-#         error_msg=error_msg,
-#     )
 
 
 def char_link_extractor(character) -> list:
@@ -466,6 +413,7 @@ def update_data(char_id):
 
 @app.route("/kchars")
 def knownchars():
+    session[key_of_prev_url_of_reading] = request.url
     characters = db.session.query(Character).filter_by(is_known=True).all()
     tags = db.session.query(Tag).all()
     return render_template(
@@ -532,6 +480,8 @@ def showcharsheet(character):
 
 @app.route("/tags")
 def tags():
+    session[key_of_prev_url_of_reading] = request.url
+    session[key_of_prev_url_of_writing] = request.url
     tags = Tag.query.all()
     return render_template("tags.html", tags=tags)
 
@@ -539,6 +489,7 @@ def tags():
 @app.route("/tags/<int:tag_id>")
 def tag_characters(tag_id):
     tag = Tag.query.get(tag_id)
+    session[key_of_prev_url_of_reading] = request.url
 
     can_read_characters = [char for char in tag.characters if char.is_known]
     can_write_characters = [char for char in tag.characters if char.can_write]
