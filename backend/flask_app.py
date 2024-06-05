@@ -764,6 +764,28 @@ def add_bulk_char_in_tag(tag_id):
     return render_template("add_bulk_chars_in_tag.html", tag=tag)
 
 
+@app.route("/hsk/<int:hsk_level>")
+def hsk_words(hsk_level):
+    characters = Character.query.filter_by(hsk_level=hsk_level).all()
+    return render_template(
+        "hsk_words.html",
+        characters=characters,
+        level=hsk_level,
+    )
+
+
+@app.route("/character/<int:character_id>")
+def get_character(character_id):
+    character = Character.query.get(character_id)
+    img_urls = char_link_extractor(character)
+    print(img_urls)
+    if character is None:
+        return "Character not found"
+    return render_template(
+        "character_details_card.html", character=character, img_urls=img_urls
+    )
+
+
 if __name__ == "__main__":
     # initialize_database()
     app.run(debug=True)
