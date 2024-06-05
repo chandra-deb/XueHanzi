@@ -158,7 +158,7 @@ def login():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    if username == "admin" and password == "learningisearning1":
+    if username == "demo" and password == "xuehanzidemo":
         session["username"] = username  # Add the user to the session
         return redirect(url_for("home"))
     else:
