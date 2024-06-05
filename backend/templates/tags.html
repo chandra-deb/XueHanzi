@@ -398,7 +398,8 @@
         document.getElementById('change-action-checkbox{{tag.id}}').addEventListener('change', function () {
             if (this.checked) {
                 document.getElementById('practice-form{{tag.id}}').action = '/wpractice/narrowed';
-            } else {
+            }
+            else {
                 document.getElementById('practice-form{{tag.id}}').action = '/default-action';
             }
         });
