@@ -138,6 +138,25 @@
             color: whitesmoke;
             font-size: 1.2em;
         }
+
+        #navbar {
+            position: sticky;
+            top: 0;
+            background-color: #3b5998;
+            padding: 10px;
+            z-index: 1;
+            margin: 8px 0;
+
+        }
+
+        #navbar a {
+            border-radius: 5px;
+            background: #007bff3b;
+            color: white;
+            padding: 8px;
+            margin-right: 1px;
+
+        }
     </style>
 </head>
 
@@ -150,6 +169,13 @@
         <h2>You first need to add characters here to practice!</h2>
     </center>
     {% else %}
+
+    <div id="navbar">
+        <a href="{{prev_url}}">Go Back</a>
+    </div>
+
+
+    <hr size="5px" style="border: none;">
 
     <div class="card-header">
         <div class="card">
