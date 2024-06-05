@@ -175,22 +175,56 @@ def require_login():
         return redirect(url_for("login"))
 
 
+# !TODO Test going on down
+from flask import render_template
+from sqlalchemy import func
+
+
 @app.route("/")
 def home():
-    page_number = 1
-    page = request.args.get("page", page_number, type=int)
-    per_page = 30
-    characters = db.session.query(Character).paginate(page=page, per_page=per_page)
-    # for chara in characters.items:
-    # print("Character: ", chara.tags)
-    # print("Tags: ", chara.tags)
-    return render_template(
-        "index.html",
-        title="Home",
-        characterList=characters.items,
-        next_page_number=page_number + 1,
-        prev_page_number=page_number - 1,
-    )
+    hsk_levels = [1, 2, 3, 4, 5]
+    stats = []
+
+    for level in hsk_levels:
+        total_words = Character.query.filter(Character.hsk_level == level).count()
+        known_words = Character.query.filter(
+            Character.hsk_level == level, Character.is_known == True
+        ).count()
+        writable_chars = Character.query.filter(
+            Character.hsk_level == level, Character.can_write == True
+        ).count()
+
+        if total_words > 0:
+            known_percentage = round((known_words / total_words) * 100)
+            writable_percentage = round((writable_chars / total_words) * 100)
+        else:
+            known_percentage = 0
+            writable_percentage = 0
+
+        stats.append(
+            {
+                "level": level,
+                "total_words": total_words,
+                "known_words": known_words,
+                "known_percentage": known_percentage,
+                "writable_chars": writable_chars,
+                "writable_percentage": writable_percentage,
+            }
+        )
+
+    return render_template("index.html", stats=stats)
+
+
+# !TODO Test going up
+
+
+# @app.route("/")
+# def home():
+
+#     return render_template(
+#         "index.html",
+#         title="Dashboard",
+#     )
 
 
 @app.route("/wchars")
@@ -212,7 +246,31 @@ def kpractice(condition):
     tag_ids = request.args.getlist("tags")
     error_msg = None
     character = None
-    if condition == "tag-all-chars":
+    if condition == "hsk1":
+        error_msg, character = randomCharacterFrom(hsk_level=1)
+    elif condition == "hsk1-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=1, is_known=True)
+    elif condition == "hsk2":
+        error_msg, character = randomCharacterFrom(hsk_level=2)
+    elif condition == "hsk2-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=2, is_known=True)
+    elif condition == "hsk3":
+        error_msg, character = randomCharacterFrom(hsk_level=3)
+    elif condition == "hsk3-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=3, is_known=True)
+    elif condition == "hsk4":
+        error_msg, character = randomCharacterFrom(hsk_level=4)
+    elif condition == "hsk4-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=4, is_known=True)
+    elif condition == "hsk5":
+        error_msg, character = randomCharacterFrom(hsk_level=5)
+    elif condition == "hsk5-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=5, is_known=True)
+    elif condition == "hsk6":
+        error_msg, character = randomCharacterFrom(hsk_level=6)
+    elif condition == "hsk6-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=6, is_known=True)
+    elif condition == "tag-all-chars":
         error_msg, character = randomCharacterFrom(tag_ids)
     else:
         error_msg, character = randomCharacterFrom(tag_ids, is_known=True)
@@ -232,7 +290,31 @@ def wpractice(condition):
     tag_ids = request.args.getlist("tags")
     error_msg = None
     character = None
-    if condition == "tag-all-chars":
+    if condition == "hsk1":
+        error_msg, character = randomCharacterFrom(hsk_level=1)
+    elif condition == "hsk1-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=1, can_write=True)
+    elif condition == "hsk2":
+        error_msg, character = randomCharacterFrom(hsk_level=2)
+    elif condition == "hsk2-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=2, can_write=True)
+    elif condition == "hsk3":
+        error_msg, character = randomCharacterFrom(hsk_level=3)
+    elif condition == "hsk3-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=3, canwrite=True)
+    elif condition == "hsk4":
+        error_msg, character = randomCharacterFrom(hsk_level=4)
+    elif condition == "hsk4-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=4, can_write=True)
+    elif condition == "hsk5":
+        error_msg, character = randomCharacterFrom(hsk_level=5)
+    elif condition == "hsk5-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=5, can_write=True)
+    elif condition == "hsk6":
+        error_msg, character = randomCharacterFrom(hsk_level=6)
+    elif condition == "hsk6-marked":
+        error_msg, character = randomCharacterFrom(hsk_level=6, can_write=True)
+    elif condition == "tag-all-chars":
         error_msg, character = randomCharacterFrom(tag_ids)
     else:
         error_msg, character = randomCharacterFrom(tag_ids, can_write=True)
@@ -252,48 +334,66 @@ def wpractice(condition):
     )
 
 
-def randomCharacterFrom(tag_ids, can_write=False, is_known=False):
+def randomCharacterFrom(tag_ids=None, can_write=False, is_known=False, hsk_level=None):
     practice_characters = []
-    if len(tag_ids) == 0:
+    if hsk_level:
         if can_write:
             practice_characters = (
-                db.session.query(Character).filter_by(can_write=True).all()
+                db.session.query(Character)
+                .filter_by(can_write=True, hsk_level=hsk_level)
+                .all()
             )
         elif is_known:
             practice_characters = (
-                db.session.query(Character).filter_by(is_known=True).all()
+                db.session.query(Character)
+                .filter_by(is_known=True, hsk_level=hsk_level)
+                .all()
+            )
+        else:
+            practice_characters = (
+                db.session.query(Character).filter_by(hsk_level=hsk_level).all()
             )
     else:
-        for tag_id in tag_ids:
-            tag = db.session.query(Tag).filter_by(id=tag_id).first()
-            if tag:
-                if can_write:
-                    chars = (
-                        db.session.query(Character)
-                        .join(Character.tags)
-                        .filter(Tag.id.in_(tag_ids))
-                        .filter(Character.can_write == True)
-                        .all()
-                    )
+        if len(tag_ids) == 0:
+            if can_write:
+                practice_characters = (
+                    db.session.query(Character).filter_by(can_write=True).all()
+                )
+            elif is_known:
+                practice_characters = (
+                    db.session.query(Character).filter_by(is_known=True).all()
+                )
+        else:
+            for tag_id in tag_ids:
+                tag = db.session.query(Tag).filter_by(id=tag_id).first()
+                if tag:
+                    if can_write:
+                        chars = (
+                            db.session.query(Character)
+                            .join(Character.tags)
+                            .filter(Tag.id.in_(tag_ids))
+                            .filter(Character.can_write == True)
+                            .all()
+                        )
 
-                elif is_known:
-                    chars = (
-                        db.session.query(Character)
-                        .join(Character.tags)
-                        .filter(Tag.id.in_(tag_ids))
-                        .filter(Character.is_known == True)
-                        .all()
-                    )
-                # This else clause will return all the character for practice within the tag
-                else:
-                    chars = (
-                        db.session.query(Character)
-                        .join(Character.tags)
-                        .filter(Tag.id.in_(tag_ids))
-                        .all()
-                    )
+                    elif is_known:
+                        chars = (
+                            db.session.query(Character)
+                            .join(Character.tags)
+                            .filter(Tag.id.in_(tag_ids))
+                            .filter(Character.is_known == True)
+                            .all()
+                        )
+                    # This else clause will return all the character for practice within the tag
+                    else:
+                        chars = (
+                            db.session.query(Character)
+                            .join(Character.tags)
+                            .filter(Tag.id.in_(tag_ids))
+                            .all()
+                        )
 
-                practice_characters.extend(chars)
+                    practice_characters.extend(chars)
     error_msg = "No characters found"
     character = ""
     try:

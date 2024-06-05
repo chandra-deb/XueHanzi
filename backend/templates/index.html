@@ -123,6 +123,112 @@
         a {
             text-decoration: none;
         }
+
+        .flex-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin: 20px 0;
+
+        }
+
+        .flex-row {
+            display: flex;
+            background-color: #3b5998;
+
+        }
+
+
+
+        .flex-item {
+            flex: 1;
+            border: 1px solid #34495e;
+            padding: 8px;
+            text-align: center;
+
+        }
+
+        .flex-item.header {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .flex-practice-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .flex-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            /* border-bottom: 1px solid #ddd;
+            background-color: #f2f2f2; */
+        }
+
+        .flex-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .practice-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+            border: none;
+        }
+
+        .practice-button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            top: 50%;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #3b5998;
+            padding: 20px;
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media screen and (max-width: 600px) {
+            .modal-content {
+                width: 95%;
+            }
+        }
+
+        .close {
+            /* color: #aaa; */
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -147,42 +253,86 @@
         </nav>
     </div>
     <hr size="40px" style="border: none;">
-    <div class="pagination">
-        {% if characterList.has_prev %}
-        <a href="{{ url_for('home', page=characterList.prev_num) }}">Previous</a>
-        {% endif %}
-        {% if characterList.has_next %}
-        <a href="{{ url_for('home', page=characterList.next_num) }}">Next</a>
-        {% endif %}
+
+    <!-- DATAS -->
+    <div class="flex-container">
+        <div class="flex-row">
+            <div class="flex-item header">Level</div>
+            <div class="flex-item header">Total Words</div>
+            <div class="flex-item header">Known</div>
+            <div class="flex-item header">In %</div>
+            <div class="flex-item header">Writable</div>
+            <div class="flex-item header">In %</div>
+
+        </div>
+        {% for stat in stats %}
+        <div class="flex-row">
+            <div class="flex-item">{{ stat.level }}</div>
+            <div class="flex-item">{{ stat.total_words }}</div>
+            <div class="flex-item">{{ stat.known_words }}</div>
+            <div class="flex-item">{{ stat.known_percentage }}%</div>
+            <div class="flex-item">{{ stat.writable_chars }}</div>
+            <div class="flex-item">{{ stat.writable_percentage }}%</div>
+
+        </div>
+        {% endfor %}
     </div>
 
-    {% for character in characterList %}
-    <div class="card">
-        <div class="hanzi"><a href="/showcharsheet/{{character.character}}" style="color: white;">{{ character.character
-                }}</a></div>
-        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Pinyin:</span> {{character.pinyin}}</div>
-        <br>
-        <div style="font-size: 1.4em;"><span style="color: aquamarine;">Meaning:</span> {{character.meaning}}</div>
-        <br>
-        <div style="font-size: 1.4em;"><span style="color: aquamarine;">HSK:</span> {{character.hsk_level}}</div>
-        <br>
-        <form action="/update_data/{{character.id}}" method="post">
-
-            Can Write:
-            <input type="checkbox" id="canwrite_{{character.id}}" name="canwrite" value="on" {% if character.can_write
-                %}checked{% endif %} />
-
-            Known:
-            <input type="checkbox" id="known_{{character.id}}" name="known" value="on" {% if character.is_known %}
-                checked {% endif %}>
-            <input type="submit" value="Submit">
-            <div class="edit-tags">
-                <a href="/charTags/{{character.id}}" style="color:burlywood;">Edit Tags</a>
+    <h2 style="margin-left: 18px;">HSK Practice</h2>
+    <div class="flex-practice-container">
+        {% for level in range(1, 7) %}
+        <div class="flex-row">
+            <div class="flex-item"><a href="/characters/hsk{{ level }}">HSK {{ level }}</a></div>
+            <div class="flex-item">
+                <button onclick="openModal('hsk{{ level }}')" class="practice-button">Do Practice</button>
             </div>
-        </form>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-    <script>window.addEventListener('beforeunload', () => {
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p id="modalText"></p>
+            <a id="readingLink" class="practice-button">Start Reading</a>
+            <a id="markedReadingLink" class="practice-button">Start Marked Reading</a>
+            <a id="writingLink" class="practice-button">Start Writing</a>
+            <a id="markedWritingLink" class="practice-button">Start Marked Writing</a>
+            <span class="close">&times;</span>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById("myModal");
+        var span = document.getElementsByClassName("close")[0];
+        var modalText = document.getElementById("modalText");
+        var readingLink = document.getElementById("readingLink");
+        var markedReadingLink = document.getElementById("markedReadingLink");
+        var writingLink = document.getElementById("writingLink");
+        var markedWritingLink = document.getElementById("markedWritingLink");
+
+        function openModal(level) {
+            modalText.textContent = 'Choose a practice type for ' + level;
+            readingLink.href = '/kpractice/' + level;
+            markedReadingLink.href = '/kpractice/' + level + '-marked';
+            writingLink.href = '/wpractice/' + level;
+            markedWritingLink.href = '/wpractice/' + level + '-marked';
+            modal.style.display = "block";
+        }
+
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        window.onbeforeunload = function () {
+            modal.style.display = "none";
+        }
+        window.addEventListener('beforeunload', () => {
             localStorage.setItem('scrollPosition', window.scrollY);
         });
 
@@ -193,7 +343,8 @@
                 window.scrollTo(0, parseInt(scrollPosition));
                 localStorage.removeItem('scrollPosition');
             }
-        });</script>
+        });
+    </script>
 </body>
 
 </html>
