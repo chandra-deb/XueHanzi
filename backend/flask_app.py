@@ -1,11 +1,17 @@
+import random
+
+import requests
 from bs4 import BeautifulSoup
-from flask import Flask, redirect, render_template, jsonify, session, url_for
+from flask import Flask, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from unidecode import unidecode
-from flask import request
-import hsk1, hsk2, hsk3, hsk4, hsk5, hsk6
-import random
-import requests
+
+import hsk1
+import hsk2
+import hsk3
+import hsk4
+import hsk5
+import hsk6
 
 app = Flask(__name__)
 
@@ -165,7 +171,7 @@ def login():
         return render_template("login_page.html")
 
 
-from flask import request, redirect, url_for
+from flask import redirect, url_for
 
 
 @app.before_request
@@ -173,11 +179,6 @@ def require_login():
     allowed_routes = ["login"]
     if "username" not in session and request.endpoint not in allowed_routes:
         return redirect(url_for("login"))
-
-
-# !TODO Test going on down
-from flask import render_template
-from sqlalchemy import func
 
 
 @app.route("/")
@@ -215,18 +216,6 @@ def home():
     return render_template("index.html", stats=stats)
 
 
-# !TODO Test going up
-
-
-# @app.route("/")
-# def home():
-
-#     return render_template(
-#         "index.html",
-#         title="Dashboard",
-#     )
-
-
 @app.route("/wchars")
 def writablechars():
     session[key_of_prev_url_of_writing] = request.url
@@ -242,7 +231,6 @@ def writablechars():
 
 @app.route("/kpractice/<string:condition>", methods=["GET"])
 def kpractice(condition):
-
     tag_ids = request.args.getlist("tags")
     error_msg = None
     character = None
@@ -319,8 +307,6 @@ def wpractice(condition):
     else:
         error_msg, character = randomCharacterFrom(tag_ids, can_write=True)
 
-    # writable_characters = db.session.query(Character).filter_by(can_write=True).all()
-    # character = random.choice(writable_characters)
 
     urls = []
     if character:
@@ -422,44 +408,8 @@ def char_link_extractor(character) -> list:
     return urls
 
 
-# @app.route('/wpractice')
-# def wpractice():
-#     writable_characters = db.session.query(Character).filter_by(can_write=True).all()
-#     character = random.choice(writable_characters)
-
-#     urls = []
-#     characters =[]
-
-#     for single in character.character:
-#         if(single not in characters):
-#             characters.append(single)
-
-#             url = f"https://www.strokeorder.com/chinese/{single}"
-#             response = requests.get(url)
-#             soup = BeautifulSoup(response.text, 'html.parser')
-
-
-#             # for how to write
-#             div = soup.find_all('div', class_='stroke-article-content')
-#             div_sheet = div[1]
-#             div_char = div[0]
-#             if div_char is not None:
-#                 img = div_char.find('img')
-#                 if img is not None:
-#                     urls.append(f"https://www.strokeorder.com{img['src']}")
-#             # for character sheet
-#             if div_sheet is not None:
-#                 img = div_sheet.find('img')
-#                 if img is not None:
-#                     urls.append(f"https://www.strokeorder.com{img['src']}")
-#     return render_template('writing_practice.html',
-#                         title='Practice' ,
-#                         img_urls=urls, character=character)
-
-
 @app.route("/character/<character>")
 def get_character_image(character):
-
     url = f"https://www.strokeorder.com/chinese/{character}"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -481,16 +431,7 @@ def get_character_image(character):
 
     return jsonify({"error": "Image not found"}), 404
 
-    # @app.route('how_to_write:<string:character>')
-    # def how_to_write(character):
 
-    """<div class="stroke-article-content">
-<img src="/assets/bishun/stroke/20320.png" alt="你 Stroke Order Diagrams" title="你 Stroke Order Diagrams">
-</div>"""
-    # return render_template('how_to_write.html', character=character)
-
-
-# generate a route for modifying can_write attribute
 @app.route("/update_data/<int:char_id>", methods=["POST"])
 def update_data(char_id):
     can_write = "canwrite" in request.form
@@ -525,7 +466,6 @@ def knownchars():
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
-
     if request.method == "POST":
         query = request.form.get("query").strip()
         session["query"] = query  # Store the query in the session
@@ -760,7 +700,6 @@ def add_bulk_char_in_tag(tag_id):
             already_in_tag_characters=already_in_tag_characters,
             newly_added_characters=newly_added_characters,
         )
-        # return redirect(url_for("tag_characters", tag_id=tag_id))
     return render_template("add_bulk_chars_in_tag.html", tag=tag)
 
 
