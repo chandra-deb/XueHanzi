@@ -1,2 +1,18 @@
-strokeorderDownloads
-.venv
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Environment / local config
+.env
+
+# Runtime data (SQLite databases etc.)
+instance/
+
+# Downloaded stroke order images
+strokeorderDownloads/
+
+# Tooling
+.pytest_cache/
+.idea/
+.vscode/
