@@ -1,48 +1,46 @@
-# XueHanzi (学汉字)
+# 📚 XueHanzi (学汉字)
 
-**A multi-user web app for learning Chinese vocabulary and handwriting, built around the HSK 1–6 word lists.**
+**A web app for learning Chinese vocabulary and handwriting, built around the HSK 1–6 word lists.**
 
-XueHanzi gives every learner a personal account on top of a shared vocabulary of
-5,000 HSK words. You decide which characters you can *recognise* and which you
-can *write from memory*, group words into your own study lists, and drill
-yourself with random-draw practice sessions. Your progress and lists are
-private to you.
+XueHanzi gives you 5,000 HSK words to work with. You decide which characters you
+can *recognise* and which you can *write from memory*, group words into your own
+study lists, and drill yourself with random-draw practice sessions.
 
-## Features
+## ✨ Features
 
-### Personal accounts
-- Sign up, sign in and sign out; optional "keep me signed in".
-- Every user has their own progress and tags. Nobody can see or change anyone else's data.
-- Passwords are hashed, all forms are CSRF-protected, and redirects are restricted to the site itself.
-- Self-service sign-up can be switched off, with accounts created from the command line instead.
-
-### Browse the HSK vocabulary
+### 📖 Browse the HSK vocabulary
 - All of HSK 1–6 (5,000 words) with hanzi, pinyin and English meanings.
 - Per-level grid view where each word is colour-coded: **new**, **known** or **can write**.
 - A detail page per word with its stroke-order diagram and practice sheet (when the images are installed).
 
-### Track what you know
+### ✅ Track what you know
 - Two independent flags per word: **Known** (you can recognise/read it) and **Can write** (you can produce it from memory).
 - A dashboard with totals, counts and percentages for each HSK level.
 - Dedicated pages listing everything you know and everything you can write.
 
-### Practise
+### 🎯 Practise
 - **Recall practice:** see a character, try to remember its pinyin and meaning, reveal the answer, then record "I know it" or "I don't know".
 - **Writing practice:** see the pinyin and meaning, write the character on paper, reveal it together with its stroke order, then record whether you could write it.
 - Choose what to draw from: a whole HSK level, one or more of your tags, or only the words you have already marked.
 - Skip to another random word at any time.
 
-### Organise with tags
+### 🏷️ Organise with tags
 - Create your own tags such as "Lesson 3", "Travel" or "Mistakes".
 - Add words from search results, from a character's own page, or paste a whole list in bulk and get a report of what was added, what was already there and what wasn't found.
 - Each tag shows how many of its words are new, known and writable, grouped into sections on the tag page.
 - Practise a single tag or several together.
 
-### Search
+### 🔍 Search
 - Find words by hanzi, by pinyin typed **without tones** (`ni hao` finds 你好), or by English meaning.
-- Results show your own progress, so you can mark or tag a word right from the results.
+- Results show your progress, so you can mark or tag a word right from the results.
 
-## Quick start
+### 🔐 Accounts and privacy
+- Sign up, sign in and sign out; optional "keep me signed in".
+- Your progress and tags are private to your account.
+- Passwords are hashed, all forms are CSRF-protected, and redirects are restricted to the site itself.
+- Self-service sign-up can be switched off, with accounts created from the command line instead.
+
+## 🚀 Quick start
 
 ```sh
 python3 -m venv .venv
@@ -62,7 +60,7 @@ Open the site and choose **Create an account**. To create accounts yourself
 .venv/bin/flask create-user alice
 ```
 
-### Stroke order images (optional)
+### 🖋️ Stroke order images (optional)
 
 The stroke-order diagrams are not stored in the repository. Download them with:
 
@@ -73,7 +71,7 @@ The stroke-order diagrams are not stored in the repository. Download them with:
 
 The downloader is resumable. Pages simply leave out images that haven't been downloaded.
 
-## Configuration
+## ⚙️ Configuration
 
 Set these as environment variables or in a `.env` file:
 
@@ -88,12 +86,12 @@ Set these as environment variables or in a `.env` file:
 For production, use a real WSGI server such as `gunicorn wsgi:app` and run
 `flask db upgrade` on every deploy.
 
-## Tech stack
+## 🧰 Tech stack
 
 Python · Flask · SQLAlchemy (SQLite by default, PostgreSQL supported) ·
 Flask-Login · Flask-WTF · Flask-Migrate (Alembic) · Jinja2 templates · pytest
 
-## How multi-user works
+## 🗄️ Data model
 
 - `Character` (the vocabulary) is shared and read-only.
 - `CharacterProgress` stores one row per *(user, character)* with that user's
@@ -103,7 +101,7 @@ Flask-Login · Flask-WTF · Flask-Migrate (Alembic) · Jinja2 templates · pytes
   user. Another user's tags answer `404`.
 - All state-changing actions are `POST` requests protected by CSRF tokens.
 
-## Project layout
+## 🗂️ Project layout
 
 ```
 wsgi.py                 entry point (gunicorn / flask)
@@ -122,16 +120,15 @@ scripts/                stroke-order downloader
 tests/
 ```
 
-## Development
+## 🧪 Development
 
 ```sh
 .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest
 ```
 
-The test suite covers authentication, per-user isolation of progress and tags,
+The test suite covers authentication, data isolation between accounts,
 practice filters, search, bulk tagging and rendering of every page.
 
 After changing a model, run `flask db migrate -m "describe the change"`, review
 the generated file in `migrations/versions/`, then `flask db upgrade`.
-
