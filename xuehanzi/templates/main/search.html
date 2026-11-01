@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import character_card with context %}
+{% block title %}Search{% if query %}: {{ query }}{% endif %} - XueHanzi{% endblock %}
+
+{% macro results_section(anchor, title, entries) %}
+{% if entries %}
+<section id="{{ anchor }}">
+    <h2>{{ title }}</h2>
+    {% for entry in entries %}
+    {{ character_card(entry, tag=tag, in_tag=(tag_member_ids is defined and entry.character.id in tag_member_ids)) }}
+    {% endfor %}
+</section>
+{% endif %}
+{% endmacro %}
+
+{% block content %}
+{% if tag %}
+<p class="muted">Adding to tag <a href="{{ url_for('tags.detail', tag_id=tag.id) }}"><u>{{ tag.name }}</u></a></p>
+{% endif %}
+
+{% if not query %}
+<p class="empty">Type a character, pinyin (without tones) or an English meaning in the search box.</p>
+{% elif not (results.hanzi or results.pinyin or results.meaning) %}
+<p class="empty">No results for "{{ query }}".</p>
+{% else %}
+<nav class="section-nav" aria-label="Result sections">
+    {% if results.hanzi %}<a href="#hanzi">Characters</a>{% endif %}
+    {% if results.pinyin %}<a href="#pinyin">Pinyin</a>{% endif %}
+    {% if results.meaning %}<a href="#meaning">Meaning</a>{% endif %}
+</nav>
+{{ results_section('hanzi', 'Character matches', results.hanzi) }}
+{{ results_section('pinyin', 'Pinyin matches', results.pinyin) }}
+{{ results_section('meaning', 'Meaning matches', results.meaning) }}
+{% endif %}
+{% endblock %}

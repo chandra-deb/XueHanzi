@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Add characters to {{ tag.name }} - XueHanzi{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Add characters to {{ tag.name }}</h1>
+    <p class="muted">Paste words or characters separated by spaces or new lines.</p>
+    <form method="post">
+        {{ csrf_field() }}
+        <div class="field">
+            <textarea name="characters" rows="10" required aria-label="Characters"></textarea>
+        </div>
+        <button class="btn" type="submit">Add</button>
+        <a class="btn btn-secondary" href="{{ url_for('tags.detail', tag_id=tag.id) }}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

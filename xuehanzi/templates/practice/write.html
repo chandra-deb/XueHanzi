@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Writing practice - XueHanzi{% endblock %}
+
+{% block content %}
+<div class="practice-bar">
+    <a class="btn btn-sm btn-secondary" href="{{ back_url }}">Go back</a>
+</div>
+
+{% if not entry %}
+<p class="empty">No characters to practise here yet. Mark some as writable, or loosen the filters.</p>
+{% else %}
+{% set c = entry.character %}
+<section class="card practice-card">
+    <p class="practice-hanzi is-hidden" id="hanzi">{{ c.hanzi }}</p>
+    <div class="practice-details">
+        <p><span class="muted">Pinyin:</span> {{ c.pinyin }}</p>
+        <p><span class="muted">Meaning:</span> {{ c.meaning }}</p>
+    </div>
+
+    <div class="practice-actions">
+        <button class="btn" type="button" id="reveal">Show character</button>
+        <a class="btn" href="{{ next_url }}">Next</a>
+    </div>
+
+    <div class="practice-actions">
+        <form method="post" action="{{ url_for('characters.update_progress', character_id=c.id) }}">
+            {{ csrf_field() }}
+            <input type="hidden" name="next" value="{{ next_url }}">
+            <input type="hidden" name="can_write" value="0">
+            <button class="btn btn-secondary" type="submit">Can't write it yet</button>
+        </form>
+        <form method="post" action="{{ url_for('characters.update_progress', character_id=c.id) }}">
+            {{ csrf_field() }}
+            <input type="hidden" name="next" value="{{ next_url }}">
+            <input type="hidden" name="can_write" value="1">
+            <button class="btn btn-secondary" type="submit">I can write it</button>
+        </form>
+    </div>
+</section>
+
+<section class="stroke-images" id="strokes" hidden aria-label="Stroke order">
+    {% for file in images %}
+    <img src="{{ url_for('characters.stroke_order_image', filename=file) }}" alt="Stroke order for {{ c.hanzi }}">
+    {% endfor %}
+</section>
+
+<script>
+    document.getElementById("reveal").addEventListener("click", function () {
+        document.getElementById("hanzi").classList.toggle("is-hidden");
+        document.getElementById("strokes").hidden = !document.getElementById("strokes").hidden;
+    });
+</script>
+{% endif %}
+{% endblock %}

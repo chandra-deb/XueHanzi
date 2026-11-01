@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Home - XueHanzi{% endblock %}
+
+{% block content %}
+<h2>Your progress</h2>
+<table class="stats-table">
+    <thead>
+        <tr>
+            <th>Level</th>
+            <th>Total words</th>
+            <th>Known</th>
+            <th>%</th>
+            <th>Writable</th>
+            <th>%</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stat in stats %}
+        <tr>
+            <td>{{ stat.level }}</td>
+            <td>{{ stat.total }}</td>
+            <td>{{ stat.known }}</td>
+            <td>{{ stat.known_percent }}%</td>
+            <td>{{ stat.writable }}</td>
+            <td>{{ stat.writable_percent }}%</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>HSK practice</h2>
+{% if stats|sum(attribute='total') == 0 %}
+<p class="muted">The vocabulary is empty. Run <code>flask seed-vocab</code> to load the HSK word lists.</p>
+{% endif %}
+<div class="level-list">
+    {% for level in levels %}
+    <div class="level-row">
+        <a class="level-name" href="{{ url_for('main.hsk_level', level=level) }}">HSK {{ level }}</a>
+        <a class="btn btn-sm" href="{{ url_for('practice.read', level=level) }}">Read</a>
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('practice.read', level=level, marked=1) }}">Read marked</a>
+        <a class="btn btn-sm" href="{{ url_for('practice.write', level=level) }}">Write</a>
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('practice.write', level=level, marked=1) }}">Write
+            marked</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

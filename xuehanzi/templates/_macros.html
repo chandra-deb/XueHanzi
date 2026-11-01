@@ -1,0 +1,68 @@
+{# Import with context so `request`/`current_path` are available:
+   {% from "_macros.html" import character_card with context %} #}
+
+{% macro csrf_field() %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% endmacro %}
+
+{% macro form_field(field, autocomplete=none) %}
+<div class="field">
+    {{ field.label }}
+    {{ field(autocomplete=autocomplete) }}
+    {% for error in field.errors %}
+    <div class="field-error">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{# A character with its checkboxes. When `tag` is given, shows add/remove for that tag. #}
+{% macro character_card(entry, tag=none, in_tag=false) %}
+{% set c = entry.character %}
+<article class="card char-card status-{{ entry.status }}">
+    <a class="hanzi" href="{{ url_for('characters.detail', character_id=c.id) }}">{{ c.hanzi }}</a>
+    <dl class="char-meta">
+        <div>
+            <dt>Pinyin</dt>
+            <dd>{{ c.pinyin }}</dd>
+        </div>
+        <div>
+            <dt>Meaning</dt>
+            <dd>{{ c.meaning }}</dd>
+        </div>
+        <div>
+            <dt>HSK</dt>
+            <dd>{{ c.hsk_level }}</dd>
+        </div>
+    </dl>
+
+    <form class="progress-form" method="post" action="{{ url_for('characters.update_progress', character_id=c.id) }}">
+        {{ csrf_field() }}
+        <input type="hidden" name="next" value="{{ current_path() }}">
+        <label class="checkbox-row">
+            <input type="hidden" name="can_write" value="0">
+            <input type="checkbox" name="can_write" value="1" {% if entry.can_write %}checked{% endif %}>
+            Can write
+        </label>
+        <label class="checkbox-row">
+            <input type="hidden" name="is_known" value="0">
+            <input type="checkbox" name="is_known" value="1" {% if entry.is_known %}checked{% endif %}>
+            Known
+        </label>
+        <button class="btn btn-sm" type="submit">Save</button>
+    </form>
+
+    <div class="card-actions">
+        {% if tag %}
+        <form method="post"
+            action="{{ url_for('tags.change_membership', tag_id=tag.id, character_id=c.id, action='remove' if in_tag else 'add') }}">
+            {{ csrf_field() }}
+            <input type="hidden" name="next" value="{{ current_path() }}">
+            <button class="btn btn-sm" type="submit">
+                {{ 'Remove from' if in_tag else 'Add to' }} {{ tag.name }}
+            </button>
+        </form>
+        {% endif %}
+        <a class="edit" href="{{ url_for('tags.character_tags', character_id=c.id, next=current_path()) }}">Edit tags</a>
+    </div>
+</article>
+{% endmacro %}

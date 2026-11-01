@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import character_card with context %}
+{% block title %}{{ tag.name }} - XueHanzi{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>{{ tag.name }} ({{ total }})</h1>
+    <a class="btn btn-sm" href="{{ url_for('tags.bulk_add', tag_id=tag.id) }}">Add characters in bulk</a>
+    <a class="btn btn-sm" href="{{ url_for('practice.write', tags=tag.id) }}">Writing practice</a>
+    <a class="btn btn-sm" href="{{ url_for('practice.read', tags=tag.id) }}">Recall practice</a>
+</div>
+
+{% if sections %}
+<nav class="section-nav" aria-label="Sections">
+    {% for title, items in sections %}
+    <a href="#section-{{ loop.index }}">{{ title }}</a>
+    {% endfor %}
+</nav>
+
+{% for title, items in sections %}
+<section id="section-{{ loop.index }}">
+    <h2>{{ title }} ({{ items|length }})</h2>
+    {% for entry in items %}
+    {{ character_card(entry, tag=tag, in_tag=true) }}
+    {% endfor %}
+</section>
+{% endfor %}
+{% else %}
+<p class="empty">This tag has no characters yet. Use the search box above, or add characters in bulk.</p>
+{% endif %}
+{% endblock %}

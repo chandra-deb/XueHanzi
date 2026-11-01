@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Tags - XueHanzi{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>Your tags</h1>
+</div>
+
+<section class="card">
+    <h3>New tag</h3>
+    <form class="inline-form" method="post" action="{{ url_for('tags.index') }}">
+        {{ csrf_field() }}
+        <input type="text" name="name" maxlength="50" placeholder="e.g. Lesson 3" required aria-label="Tag name">
+        <button class="btn" type="submit">Add tag</button>
+    </form>
+</section>
+
+{% if tags %}
+<section class="card">
+    <h3>Practise several tags together</h3>
+    <form method="get">
+        <div class="tag-picker">
+            {% for tag in tags %}
+            <label class="checkbox-row">
+                <input type="checkbox" name="tags" value="{{ tag.id }}"> {{ tag.name }}
+            </label>
+            {% endfor %}
+        </div>
+        <label class="checkbox-row">
+            <input type="checkbox" name="marked" value="1"> Marked characters only
+        </label>
+        <p class="practice-actions" style="justify-content: flex-start;">
+            <button class="btn" type="submit" formaction="{{ url_for('practice.write') }}">Writing practice</button>
+            <button class="btn" type="submit" formaction="{{ url_for('practice.read') }}">Recall practice</button>
+        </p>
+    </form>
+</section>
+{% endif %}
+
+{% for tag in tags %}
+{% set s = stats[tag.id] %}
+<article class="card tag-card">
+    <a class="tag-name" href="{{ url_for('tags.detail', tag_id=tag.id) }}">{{ tag.name }}</a>
+    <div class="tag-counts">
+        <span>Words: {{ s.total }}</span>
+        <span>Can write: {{ s.writable }}</span>
+        <span>Can read: {{ s.known }}</span>
+        <span>New: {{ s.new }}</span>
+    </div>
+    <div class="card-actions">
+        <a class="btn btn-sm" href="{{ url_for('practice.write', tags=tag.id) }}">Write</a>
+        <a class="btn btn-sm" href="{{ url_for('practice.read', tags=tag.id) }}">Read</a>
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('practice.write', tags=tag.id, marked=1) }}">Write marked</a>
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('practice.read', tags=tag.id, marked=1) }}">Read marked</a>
+        <form method="post" action="{{ url_for('tags.delete', tag_id=tag.id) }}"
+            data-confirm="Delete the tag &quot;{{ tag.name }}&quot;? The characters themselves are kept.">
+            {{ csrf_field() }}
+            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+        </form>
+    </div>
+</article>
+{% else %}
+<p class="empty">You don't have any tags yet. Create one above to group characters.</p>
+{% endfor %}
+{% endblock %}

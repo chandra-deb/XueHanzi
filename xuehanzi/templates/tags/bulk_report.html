@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Bulk add report - XueHanzi{% endblock %}
+
+{% macro report_section(title, items) %}
+{% if items %}
+<h2>{{ title }} ({{ items|length }})</h2>
+<ul class="report-list">
+    {% for item in items %}<li>{{ item }}</li>{% endfor %}
+</ul>
+{% endif %}
+{% endmacro %}
+
+{% block content %}
+<section class="card">
+    <h1>Bulk add report for {{ tag.name }}</h1>
+    <p>Total entries: {{ report.total }}</p>
+    {{ report_section("Newly added", report.added) }}
+    {{ report_section("Already in this tag", report.already_in_tag) }}
+    {{ report_section("Not found in the vocabulary", report.unknown) }}
+    <a class="btn" href="{{ url_for('tags.detail', tag_id=tag.id) }}">Done</a>
+</section>
+{% endblock %}

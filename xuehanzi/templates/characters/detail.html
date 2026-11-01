@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import character_card with context %}
+{% block title %}{{ entry.character.hanzi }} - XueHanzi{% endblock %}
+
+{% block content %}
+{{ character_card(entry) }}
+
+{% if images %}
+<section class="stroke-images" aria-label="Stroke order">
+    {% for file in images %}
+    <img src="{{ url_for('characters.stroke_order_image', filename=file) }}" alt="Stroke order for {{ entry.character.hanzi }}">
+    {% endfor %}
+</section>
+{% else %}
+<p class="muted">No stroke order images have been downloaded for this word.</p>
+{% endif %}
+{% endblock %}

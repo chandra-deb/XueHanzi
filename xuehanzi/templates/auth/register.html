@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import form_field %}
+{% block title %}Create account - XueHanzi{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h1>Create your account</h1>
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ form_field(form.username, autocomplete="username") }}
+        {{ form_field(form.password, autocomplete="new-password") }}
+        {{ form_field(form.confirm_password, autocomplete="new-password") }}
+        <button class="btn" type="submit">Create account</button>
+    </form>
+    <p class="muted">Already registered? <a href="{{ url_for('auth.login') }}"><u>Sign in</u></a></p>
+</section>
+{% endblock %}

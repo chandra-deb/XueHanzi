@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}HSK {{ level }} - XueHanzi{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1>HSK {{ level }}</h1>
+    <a class="btn btn-sm" href="{{ url_for('practice.read', level=level) }}">Read practice</a>
+    <a class="btn btn-sm" href="{{ url_for('practice.write', level=level) }}">Write practice</a>
+</div>
+
+<div class="legend">
+    <span>New</span>
+    <span class="known">Known</span>
+    <span class="can-write">Can write</span>
+</div>
+
+<div class="char-grid">
+    {% for entry in entries %}
+    <a class="status-{{ entry.status }}" href="{{ url_for('characters.detail', character_id=entry.character.id) }}">
+        {{ entry.character.hanzi }}
+    </a>
+    {% else %}
+    <p class="empty">No words loaded for this level.</p>
+    {% endfor %}
+</div>
+{% endblock %}

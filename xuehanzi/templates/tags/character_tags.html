@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf_field %}
+{% block title %}Tags for {{ character.hanzi }} - XueHanzi{% endblock %}
+
+{% block content %}
+<section class="card">
+    <p class="hanzi">{{ character.hanzi }}</p>
+    <h2>Tags</h2>
+
+    {% if tags %}
+    <form method="post">
+        {{ csrf_field() }}
+        <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+        <div class="tag-picker">
+            {% for tag in tags %}
+            <label class="checkbox-row">
+                <input type="checkbox" name="tags" value="{{ tag.id }}" {% if tag.id in attached %}checked{% endif %}>
+                {{ tag.name }}
+            </label>
+            {% endfor %}
+        </div>
+        <button class="btn" type="submit">Save</button>
+        <a class="btn btn-secondary" href="{{ url_for('characters.detail', character_id=character.id) }}">Cancel</a>
+    </form>
+    {% else %}
+    <p class="muted">You have no tags yet. <a href="{{ url_for('tags.index') }}"><u>Create one</u></a> first.</p>
+    {% endif %}
+</section>
+{% endblock %}
