@@ -112,7 +112,7 @@ xuehanzi/
   config.py             settings from the environment
   models.py             User, Character, CharacterProgress, Tag
   forms.py              login / registration forms
-  cli.py                flask seed-vocab | create-user | import-legacy
+  cli.py                flask seed-vocab | create-user
   views/                blueprints: auth, main, characters, practice, tags
   services/             user-scoped queries and business logic
   data/                 bundled HSK word lists (JSON)
@@ -135,16 +135,3 @@ practice filters, search, bulk tagging and rendering of every page.
 After changing a model, run `flask db migrate -m "describe the change"`, review
 the generated file in `migrations/versions/`, then `flask db upgrade`.
 
-## Upgrading from the old single-user version
-
-Earlier versions kept everything in `instance/characters.db` for a single
-learner. To carry that data over, create your account and import it:
-
-```sh
-.venv/bin/flask create-user alice
-.venv/bin/flask import-legacy instance/characters.db --username alice
-```
-
-Words are matched by HSK level and serial number (falling back to the hanzi),
-duplicates from the old importer are merged, and the command is safe to repeat.
-The old file is only read, never modified.
